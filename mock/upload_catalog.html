@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatalogGate - Ingest Catalog</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="upload_catalog.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="vendor_dashboard.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+        <li class="sidebar-menu-item active">
+          <a href="upload_catalog.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Upload Catalog
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="history.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            History
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="validation_rules.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="9" x2="20" y2="9"/>
+              <line x1="4" y1="15" x2="20" y2="15"/>
+              <line x1="10" y1="3" x2="8" y2="21"/>
+              <line x1="16" y1="3" x2="14" y2="21"/>
+            </svg>
+            Validation Rules
+          </a>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        Tia Supplies - Vendor
+      </div>
+    </aside>
+    
+    <!-- Main Content Panel -->
+    <main class="main-content">
+      
+      <!-- Workspace area -->
+      <div class="workspace-canvas">
+        
+        <!-- Welcome Header -->
+        <div class="canvas-header" style="margin-top: 1rem; align-items: center;">
+          <div class="canvas-header-left">
+            <span class="user-welcome">Welcome Tian Chen!</span>
+            <h1>Ingest <strong>Catalog</strong></h1>
+          </div>
+          
+          <div class="topbar-utilities" style="position: absolute; right: 2rem; top: 1.5rem; display: flex; align-items: center; gap: 1.25rem; z-index: 10;">
+            <div class="user-profile-widget" style="display: flex; align-items: center; gap: 0.5rem;">
+              <div style="text-align: right; line-height: 1.2;">
+                <div style="font-size: 0.775rem; font-weight: 700; color: var(--text-main);">Tian Chen</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Tia Supplies - Owner</div>
+              </div>
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop" alt="Tia Profile" class="user-avatar-main" style="width: 36px; height: 36px; border-radius: 50%;">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Wizard Views Container -->
+        <div class="wizard-container">
+          
+          <!-- STATE 1: UPLOAD TARGET VIEW -->
+          <div class="wizard-view active" id="upload-view">
+            <div class="section-card upload-card">
+              <div class="upload-dropzone" id="dropzone">
+                <div class="dropzone-inner">
+                  <div class="icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="17 8 12 3 7 8"/>
+                      <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                  </div>
+                  <h3>Select or Drop catalog spreadsheet</h3>
+                  <p class="formats-text">Supports CSV, XLSX, or XLS files (up to 50MB)</p>
+                  
+                  <div class="manual-upload">
+                    <button class="btn-browse" id="btn-browse">Browse Files</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- STATE 2: PROCESSING WIZARD VIEW -->
+          <div class="wizard-view" id="processing-view">
+            <div class="section-card processing-card">
+              <div class="processing-header">
+                <div class="processing-title-block">
+                  <h2>Validating Ingested Catalog</h2>
+                  <p class="file-label" id="checking-file-name">catalog_submissions.csv</p>
+                </div>
+                <div class="progress-radial-container">
+                  <div class="progress-radial" id="radial-bar">
+                    <span class="progress-radial-value" id="radial-text">0%</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="linear-progress" style="width: 0%;"></div>
+              </div>
+              
+              <!-- Checklist of validation steps -->
+              <div class="validation-steps-list">
+                <div class="step-item" id="step-ingestion">
+                  <div class="step-icon">
+                    <span class="spinner"></span>
+                  </div>
+                  <div class="step-details">
+                    <h4>Ingesting & Parsing Catalog</h4>
+                    <p>Extracting rows, normalizing encoding, and matching column headers.</p>
+                  </div>
+                </div>
+                
+                <div class="step-item step-pending" id="step-schema">
+                  <div class="step-icon">
+                    <span class="step-dot"></span>
+                  </div>
+                  <div class="step-details">
+                    <h4>Structural Schema Integrity Check</h4>
+                    <p>Validating required headers, matching cell structures, and verifying data types.</p>
+                  </div>
+                </div>
+                
+                <div class="step-item step-pending" id="step-quality">
+                  <div class="step-icon">
+                    <span class="step-dot"></span>
+                  </div>
+                  <div class="step-details">
+                    <h4>Data Quality & Accuracy Check</h4>
+                    <p>Detecting pricing bounds, empty values, category overlaps, and duplicate records.</p>
+                  </div>
+                </div>
+                
+                <div class="step-item step-pending" id="step-compliance">
+                  <div class="step-icon">
+                    <span class="step-dot"></span>
+                  </div>
+                  <div class="step-details">
+                    <h4>Business Logic & Vendor Compliance</h4>
+                    <p>Running supplier boundary checks and cross-checking SKU standards.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- STATE 3: DETAILED REPORT VIEW -->
+          <div class="wizard-view" id="report-view">
+            <div class="section-card report-card">
+              <div class="report-header status-blocked">
+                <div class="report-status-badge badge-blocked">Ingestion Blocked</div>
+                <h2>Validation Incomplete - Issues Detected</h2>
+                <p>Ingestion requires fixing structural errors. Warnings can be bypassed after review.</p>
+              </div>
+              
+              <!-- Report KPI Cards Grid -->
+              <div class="report-kpis">
+                <div class="report-kpi-card">
+                  <span class="kpi-label">TOTAL ROWS PROCESSED</span>
+                  <span class="kpi-value">12,450</span>
+                </div>
+                <div class="report-kpi-card error-highlight">
+                  <span class="kpi-label">CRITICAL ERRORS</span>
+                  <span class="kpi-value">3</span>
+                </div>
+                <div class="report-kpi-card warning-highlight">
+                  <span class="kpi-label">WARNINGS FOUND</span>
+                  <span class="kpi-value">2</span>
+                </div>
+                <div class="report-kpi-card score-highlight">
+                  <span class="kpi-label">QUALITY INDEX</span>
+                  <span class="kpi-value">99.6%</span>
+                </div>
+              </div>
+              
+              <!-- Detailed Issues List -->
+              <div class="report-table-section">
+                <h3 class="section-subtitle">Detailed Validation Log</h3>
+                
+                <div class="report-table-wrapper">
+                  <table class="report-table">
+                    <thead>
+                      <tr>
+                        <th>Severity</th>
+                        <th>Row #</th>
+                        <th>Field / Column</th>
+                        <th>Validation Error Details</th>
+                        <th>Ingested Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><span class="severity-badge badge-critical">Error</span></td>
+                        <td class="font-mono">Row 42</td>
+                        <td class="font-mono text-bold">price</td>
+                        <td>Price $0.00 is below minimum threshold of $0.01 for Ballpoint Gel Pen (Blue)</td>
+                        <td class="font-mono bg-warning">0.00</td>
+                      </tr>
+                      <tr>
+                        <td><span class="severity-badge badge-critical">Error</span></td>
+                        <td class="font-mono">Row 108</td>
+                        <td class="font-mono text-bold">category</td>
+                        <td>Category 'Electronics' is invalid for Stationery supplier Tia Supplies. Did you mean 'Office Supplies'?</td>
+                        <td class="font-mono bg-warning">"Electronics"</td>
+                      </tr>
+                      <tr>
+                        <td><span class="severity-badge badge-critical">Error</span></td>
+                        <td class="font-mono">Row 245</td>
+                        <td class="font-mono text-bold">sku</td>
+                        <td>SKU format violates active supplier format mask '^[A-Z]{3}-\d{4}$'</td>
+                        <td class="font-mono bg-warning">"PENCIL-HB"</td>
+                      </tr>
+                      <tr>
+                        <td><span class="severity-badge badge-warn">Warning</span></td>
+                        <td class="font-mono">Row 892</td>
+                        <td class="font-mono text-bold">description</td>
+                        <td>Notebook description contains invalid formatting characters</td>
+                        <td class="font-mono text-truncate">"Premium college ruled notebook... [invalid characters]"</td>
+                      </tr>
+                      <tr>
+                        <td><span class="severity-badge badge-warn">Warning</span></td>
+                        <td class="font-mono">Row 1,024</td>
+                        <td class="font-mono text-bold">stock_units</td>
+                        <td>Stock units count cannot be negative integer for Leather Organizers</td>
+                        <td class="font-mono">-15</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              <!-- Report Action Bar -->
+              <div class="report-actions">
+                <div class="actions-left">
+                  <button class="btn-secondary" id="btn-fix-reupload">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.4rem;">
+                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                    </svg>
+                    Fix & Re-upload Catalog
+                  </button>
+                  <button class="btn-secondary" id="btn-download-audit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.4rem;">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Download Audit Report (CSV)
+                  </button>
+                </div>
+                <div class="actions-right">
+                  <button class="btn-primary" id="btn-submit-override" disabled title="Submit catalog after resolving critical errors.">
+                    Submit Anyway (Override Warnings)
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="app-footer-container">
+          <div class="app-footer-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M9 17V7" />
+              <path d="M15 17V7" />
+              <path d="M9 12h6" />
+            </svg>
+            CatalogGate Enterprise
+          </div>
+          <div class="app-footer-center">
+            &copy; 2026 CatalogGate Enterprise. All rights reserved.
+          </div>
+          <div class="app-footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Security Compliance</a>
+          </div>
+        </div>
+      </footer>
+    </main>
+    
+  </div>
+
+  <script>
+    // State View selectors
+    const uploadView = document.getElementById('upload-view');
+    const processingView = document.getElementById('processing-view');
+    const reportView = document.getElementById('report-view');
+    
+    // Uploader inputs
+    const dropzone = document.getElementById('dropzone');
+    const checkingFileName = document.getElementById('checking-file-name');
+    
+    // Progress items
+    const linearProgress = document.getElementById('linear-progress');
+    const radialText = document.getElementById('radial-text');
+    const radialBar = document.getElementById('radial-bar');
+    
+    const stepIngestion = document.getElementById('step-ingestion');
+    const stepSchema = document.getElementById('step-schema');
+    const stepQuality = document.getElementById('step-quality');
+    const stepCompliance = document.getElementById('step-compliance');
+    
+    // Action buttons
+    const btnFixReupload = document.getElementById('btn-fix-reupload');
+    const btnDownloadAudit = document.getElementById('btn-download-audit');
+    
+    let currentFileName = "catalog_submissions.csv";
+    
+    // Helper to switch view states
+    function showState(state) {
+      uploadView.classList.remove('active');
+      processingView.classList.remove('active');
+      reportView.classList.remove('active');
+      
+      if (state === 'upload') uploadView.classList.add('active');
+      if (state === 'processing') processingView.classList.add('active');
+      if (state === 'report') reportView.classList.add('active');
+    }
+    
+    // Trigger mock wizard ingestion
+    function handleFileSelected(name) {
+      currentFileName = name || "catalog_submissions.csv";
+      checkingFileName.textContent = currentFileName;
+      
+      showState('processing');
+      startSimulation();
+    }
+    
+    // Drag & Drop events
+    ['dragenter', 'dragover'].forEach(name => {
+      dropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      }, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(name => {
+      dropzone.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (name === 'drop') {
+          const files = e.dataTransfer.files;
+          if (files.length > 0) {
+            handleFileSelected(files[0].name);
+          }
+        }
+      }, false);
+    });
+    
+    const btnBrowse = document.getElementById('btn-browse');
+    
+    btnBrowse.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent double triggering from dropzone click bubbles
+      handleFileSelected("tia_supplies_stationery_catalog.csv");
+    });
+    
+    dropzone.addEventListener('click', () => {
+      handleFileSelected("tia_supplies_stationery_catalog.csv");
+    });
+    
+    // Simulator sequence
+    function startSimulation() {
+      // Reset simulator states in HTML
+      linearProgress.style.width = '0%';
+      radialText.textContent = '0%';
+      radialBar.style.background = `conic-gradient(var(--primary-blue) 0deg, #f1f5f9 0deg)`;
+      
+      resetStepStyles(stepIngestion, 'loading');
+      resetStepStyles(stepSchema, 'pending');
+      resetStepStyles(stepQuality, 'pending');
+      resetStepStyles(stepCompliance, 'pending');
+      
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 1;
+        
+        // Update percentages
+        linearProgress.style.width = `${progress}%`;
+        radialText.textContent = `${progress}%`;
+        radialBar.style.background = `conic-gradient(var(--primary-blue) ${progress * 3.6}deg, #f1f5f9 0deg)`;
+        
+        // Stage milestones
+        if (progress === 25) {
+          // Finish Ingestion, Start Schema Check
+          markStepComplete(stepIngestion);
+          markStepLoading(stepSchema);
+        } else if (progress === 50) {
+          // Finish Schema Check, Start Quality
+          markStepComplete(stepSchema);
+          markStepLoading(stepQuality);
+        } else if (progress === 75) {
+          // Finish Quality Check, Start Compliance
+          markStepComplete(stepQuality);
+          markStepLoading(stepCompliance);
+        } else if (progress >= 100) {
+          clearInterval(interval);
+          // Finish compliance validation
+          markStepComplete(stepCompliance);
+          
+          setTimeout(() => {
+            showState('report');
+          }, 600);
+        }
+      }, 50); // Takes ~5 seconds total
+    }
+    
+    // Status style modifiers
+    function resetStepStyles(element, state) {
+      element.className = 'step-item';
+      if (state === 'pending') {
+        element.classList.add('step-pending');
+        element.querySelector('.step-icon').innerHTML = `<span class="step-dot"></span>`;
+      } else if (state === 'loading') {
+        element.querySelector('.step-icon').innerHTML = `<span class="spinner"></span>`;
+      }
+    }
+    
+    function markStepLoading(element) {
+      element.classList.remove('step-pending');
+      element.querySelector('.step-icon').innerHTML = `<span class="spinner"></span>`;
+    }
+    
+    function markStepComplete(element) {
+      element.className = 'step-item step-complete';
+      element.querySelector('.step-icon').innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      `;
+    }
+    
+    // Fix and re-upload links back
+    btnFixReupload.addEventListener('click', () => {
+      showState('upload');
+    });
+    
+    btnDownloadAudit.addEventListener('click', () => {
+      alert("Downloading catalog validation audit details as audit_report.csv...");
+    });
+  </script>
+</body>
+</html>
