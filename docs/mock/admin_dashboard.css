@@ -1,0 +1,162 @@
+@import url('vendor_dashboard.css');
+
+/* Admin Dashboard Specific Styles */
+
+/* Search bar styling */
+.search-wrapper .search-input {
+  transition: all var(--transition-fast);
+}
+
+.search-wrapper .search-input:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px var(--primary-blue-light);
+  width: 250px;
+}
+
+/* Sidebar action styling */
+.btn-new-upload-sidebar:hover {
+  background-color: var(--primary-blue-hover) !important;
+  box-shadow: 0 4px 10px rgba(122, 160, 255, 0.2);
+}
+
+/* KPI cards details */
+.kpi-card {
+  transition: all var(--transition-fast);
+}
+
+.kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary-blue);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.03);
+}
+
+/* Chart Canvas styling */
+.chart-lbl {
+  font-size: 0.65rem;
+  font-weight: 600;
+  fill: #94a3b8;
+}
+
+.chart-node {
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.chart-node:hover {
+  r: 6;
+  fill: var(--primary-blue);
+}
+
+/* Chart active triggers */
+.toggle-btn {
+  transition: all var(--transition-fast);
+}
+
+.toggle-btn:not(.active):hover {
+  background-color: #cbd5e1;
+  color: var(--text-main);
+}
+
+/* Approvals rows styling */
+.approval-item {
+  transition: all var(--transition-fast);
+}
+
+.approval-item:hover {
+  border-color: var(--primary-blue) !important;
+  background-color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transform: translateX(2px);
+}
+
+.approval-item:hover .approval-item-icon {
+  background-color: var(--primary-blue) !important;
+  color: #ffffff !important;
+}
+
+/* Notifications icons scale styling */
+.notification-bell, .settings-gear {
+  transition: all var(--transition-fast);
+  border-radius: 50%;
+}
+
+.notification-bell:hover, .settings-gear:hover {
+  background-color: #f1f5f9;
+  transform: scale(1.05);
+}
+
+/* Grid configurations */
+.visual-metrics-grid {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Health capsule style */
+.health-capsule {
+  transition: all var(--transition-fast);
+}
+
+.health-capsule:hover {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  transform: translateY(-1px);
+}
+
+@keyframes pulse-green {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Remove viewport constraints to allow natural scrolling */
+.app-container {
+  height: auto !important;
+  min-height: 100vh;
+  overflow: visible !important;
+}
+
+.main-content {
+  height: auto !important;
+  min-height: 100vh;
+  overflow: visible !important;
+}
+
+.workspace-canvas {
+  height: auto !important;
+  overflow: visible !important;
+  min-height: 100%;
+}
+
+/* Increase heights of card components */
+.kpi-card {
+  height: 135px !important;
+  padding: 1.35rem 1.5rem !important;
+  border-radius: 0 !important;
+}
+
+.chart-card, .approvals-card {
+  min-height: 500px !important;
+  border-radius: 0 !important;
+}
+
+.chart-canvas-wrapper {
+  height: 320px !important;
+}
+
+/* Allow lists and tables to expand naturally without nested scrollbars */
+.table-container, .approvals-list-wrapper {
+  overflow-y: visible !important;
+}
+
+.section-card {
+  height: auto !important;
+  border-radius: 0 !important;
+}

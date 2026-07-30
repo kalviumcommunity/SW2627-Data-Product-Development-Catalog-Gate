@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CatalogGate - Validation Rules</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="validation_rules.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item">
+          <a href="vendor_dashboard.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            Dashboard
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="upload_catalog.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Upload Catalog
+          </a>
+        </li>
+        <li class="sidebar-menu-item">
+          <a href="history.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            History
+          </a>
+        </li>
+        <li class="sidebar-menu-item active">
+          <a href="validation_rules.html" class="sidebar-menu-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="9" x2="20" y2="9"/>
+              <line x1="4" y1="15" x2="20" y2="15"/>
+              <line x1="10" y1="3" x2="8" y2="21"/>
+              <line x1="16" y1="3" x2="14" y2="21"/>
+            </svg>
+            Validation Rules
+          </a>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        Tia Supplies - Vendor
+      </div>
+    </aside>
+    
+    <!-- Main Content Panel -->
+    <main class="main-content">
+      
+      <!-- Workspace area -->
+      <div class="workspace-canvas" style="overflow-y: auto;">
+        
+        <!-- Welcome Header -->
+        <div class="canvas-header" style="margin-top: 1rem; align-items: center; margin-bottom: 1.5rem;">
+          <div class="canvas-header-left">
+            <span class="user-welcome">Welcome Tian Chen!</span>
+            <h1>Validation <strong>Rules</strong></h1>
+          </div>
+          
+          <div class="topbar-utilities" style="position: absolute; right: 2rem; top: 1.5rem; display: flex; align-items: center; gap: 1.25rem; z-index: 10;">
+            <div class="user-profile-widget" style="display: flex; align-items: center; gap: 0.5rem;">
+              <div style="text-align: right; line-height: 1.2;">
+                <div style="font-size: 0.775rem; font-weight: 700; color: var(--text-main);">Tian Chen</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Tia Supplies - Owner</div>
+              </div>
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=150&auto=format&fit=crop" alt="Tia Profile" class="user-avatar-main" style="width: 36px; height: 36px; border-radius: 50%;">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Read-Only Banner -->
+        <div class="read-only-banner" style="background: rgba(122, 160, 255, 0.08); border: 1px solid rgba(122, 160, 255, 0.25); padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.8rem; color: #1e40af; font-weight: 500; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.5rem; width: 100%; box-sizing: border-box;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--primary-blue); flex-shrink: 0;">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>Validation rules are configured by the Catalog System Admin. Vendors have read-only permissions.</span>
+        </div>
+        
+        <!-- Categories Rules Grid -->
+        <div class="rules-grid">
+          
+          <!-- Category 1: Structural Checks -->
+          <div class="rules-section-card">
+            <div class="section-card-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="section-icon">
+                <rect x="3" y="3" width="18" height="18" rx="2" />
+                <path d="M9 3v18" />
+                <path d="M15 3v18" />
+              </svg>
+              <h2>Structural Checks</h2>
+            </div>
+            
+            <div class="rule-items-container">
+              <!-- Item 1: Column Presence -->
+              <div class="rule-item locked">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>Column Presence</h3>
+                    <span class="badge locked">MANDATORY</span>
+                  </div>
+                  <p class="rule-description">Verify catalog CSV contains all required headers (SKU, Price, Name, Category).</p>
+                </div>
+                <div class="rule-controls">
+                  <span class="locked-status">Always Enabled</span>
+                </div>
+              </div>
+              
+              <!-- Item 2: File Format Constraints -->
+              <div class="rule-item locked">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>Format Constraints</h3>
+                    <span class="badge locked">MANDATORY</span>
+                  </div>
+                  <p class="rule-description">Permit only valid Excel (.xlsx, .xls) or CSV files under 50MB.</p>
+                </div>
+                <div class="rule-controls">
+                  <span class="locked-status">Always Enabled</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Category 2: Value Integrity Checks -->
+          <div class="rules-section-card">
+            <div class="section-card-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="section-icon">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 6v6l4 2" />
+              </svg>
+              <h2>Value Integrity Checks</h2>
+            </div>
+            
+            <div class="rule-items-container">
+              <!-- Item 3: Price Bounds -->
+              <div class="rule-item">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>Price Range Bounds</h3>
+                  </div>
+                  <p class="rule-description">Flag product prices falling outside the defined minimum and maximum invoice values.</p>
+                  <div class="rule-config-row">
+                    <div class="config-input-group">
+                      <label>Min ($):</label>
+                      <input type="number" class="config-input text-field" value="0.01" step="0.01" disabled>
+                    </div>
+                    <div class="config-input-group">
+                      <label>Max ($):</label>
+                      <input type="number" class="config-input text-field" value="10000" disabled>
+                    </div>
+                  </div>
+                </div>
+                <div class="rule-controls">
+                  <label class="switch-toggle" aria-label="Toggle Price Bounds">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Item 4: Stock Threshold -->
+              <div class="rule-item">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>Stock Count Threshold</h3>
+                  </div>
+                  <p class="rule-description">Enforce minimum inventory stock level requirements for active ingestion listings.</p>
+                  <div class="rule-config-row">
+                    <div class="config-input-group">
+                      <label>Min stock units:</label>
+                      <input type="number" class="config-input text-field" value="0" min="0" disabled>
+                    </div>
+                  </div>
+                </div>
+                <div class="rule-controls">
+                  <label class="switch-toggle" aria-label="Toggle Stock Threshold">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Item 5: SKU Mask Regex -->
+              <div class="rule-item">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>SKU Format Regex Mask</h3>
+                  </div>
+                  <p class="rule-description">Verify supplier stock keeping codes correspond to global regex schemas.</p>
+                  <div class="rule-config-row">
+                    <div class="config-input-group" style="width: 100%;">
+                      <label>Regex pattern:</label>
+                      <input type="text" class="config-input text-field" value="^[A-Z]{3}-\d{4}$" style="font-family: monospace; width: 160px;" disabled>
+                    </div>
+                  </div>
+                </div>
+                <div class="rule-controls">
+                  <label class="switch-toggle" aria-label="Toggle SKU Regex">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Category 3: Data Quality Audits -->
+          <div class="rules-section-card">
+            <div class="section-card-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="section-icon">
+                <path d="M12 2v20" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+              <h2>Data Quality Audits</h2>
+            </div>
+            
+            <div class="rule-items-container">
+              <!-- Item 6: Null Tolerance -->
+              <div class="rule-item">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>Null Cell Tolerances</h3>
+                  </div>
+                  <p class="rule-description">Trigger failure alerts when incomplete details fields exceed percentage margins.</p>
+                  <div class="rule-config-row">
+                    <div class="config-input-group">
+                      <label>Limit ratio:</label>
+                      <input type="text" class="config-input text-field" value="5%" style="width: 60px;" disabled>
+                    </div>
+                  </div>
+                </div>
+                <div class="rule-controls">
+                  <label class="switch-toggle" aria-label="Toggle Null Tolerance">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Item 7: SKU Duplicate Audit -->
+              <div class="rule-item">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>Duplicate Key Invalidation</h3>
+                  </div>
+                  <p class="rule-description">Identify and block import files displaying repeat identifiers on single row batches.</p>
+                </div>
+                <div class="rule-controls">
+                  <label class="switch-toggle" aria-label="Toggle SKU Duplicate Audit">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Category 4: Supplier Compliance -->
+          <div class="rules-section-card">
+            <div class="section-card-header">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="section-icon">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+              </svg>
+              <h2>Compliance Audits</h2>
+            </div>
+            
+            <div class="rule-items-container">
+              <!-- Item 8: Image Availability -->
+              <div class="rule-item">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>Media Asset Availability</h3>
+                  </div>
+                  <p class="rule-description">Ensure image hyperlinks are provided and match active formats (PNG, JPG, WEBP).</p>
+                </div>
+                <div class="rule-controls">
+                  <label class="switch-toggle" aria-label="Toggle Media Compliance">
+                    <input type="checkbox" disabled>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Item 9: MSRP Compliance -->
+              <div class="rule-item">
+                <div class="rule-info">
+                  <div class="rule-name-wrapper">
+                    <h3>MSRP Cost Auditing</h3>
+                  </div>
+                  <p class="rule-description">Verify retail pricing matches suggested list values within maximum 20% discount bounds.</p>
+                </div>
+                <div class="rule-controls">
+                  <label class="switch-toggle" aria-label="Toggle MSRP Cost Audit">
+                    <input type="checkbox" checked disabled>
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        
+      </div>
+      
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="app-footer-container">
+          <div class="app-footer-left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M9 17V7" />
+              <path d="M15 17V7" />
+              <path d="M9 12h6" />
+            </svg>
+            CatalogGate Enterprise
+          </div>
+          <div class="app-footer-center">
+            &copy; 2026 CatalogGate Enterprise. All rights reserved.
+          </div>
+          <div class="app-footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Security Compliance</a>
+          </div>
+        </div>
+      </footer>
+    </main>
+    
+  </div>
+</body>
+</html>
