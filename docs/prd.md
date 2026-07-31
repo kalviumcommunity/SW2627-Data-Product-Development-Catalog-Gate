@@ -60,7 +60,9 @@ These capabilities would define the success for the product:
 
 2. **Reporting**  
 * Generate clear validation reports for every processed catalog.  
+* Show persona (vendor or catalog admin) specific KPIs in the dashboard.
 * Provide actionable feedback that helps vendors resolve detected issues.
+* Enable the catalog admin to track ingestions over the time.
 
 3. **Workflow**  
 * Enable vendors to upload, review validation feedback, and resubmit corrected catalogs.  
@@ -80,6 +82,7 @@ The intelligence layer will be added as a part of V2.
 # Mock UX
 
 For UX specifications see [UX Specs](./ux_specs.md) (UX Specification Tab)
+High-fid mock UX: [here](https://kalviumcommunity.github.io/SW2627-Data-Product-Development-Catalog-Gate)
 
 # Technical Requirements
 
@@ -89,11 +92,8 @@ The Tech stack is Python-based while the frontend would be a react app. We have 
 1. **Frontend Views:** React (Optionally, streamlit though it has serious architectural quirks making it unsuitable for a business application).  
 2. **Server:** FastAPI   
 3. **Data Processing & Transformation:** Pandas \+ Numpy  
-4. **Database:** ProgesSQL 
+4. **Database:** PostgreSQL 
 5. **ORM:** Supabase 
 6. **Validation & Data Modelling:** Pydantic  
 7. **Reporting & Reporting:** Pandas & Plotly  
 8. **Anomaly Detection:** Scikit-learn’s Isolation Forest
-
-# Notes & FAQs
-
