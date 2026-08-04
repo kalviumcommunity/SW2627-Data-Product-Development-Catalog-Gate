@@ -1,10 +1,26 @@
 from fastapi import HTTPException
-
 from app.supabase_client import supabase
 
 
 def register_user(data):
-    # 1. Create user in Supabase Auth
+    # 1. Find tenant using tenant code
+    tenant_response = (
+        supabase
+        .table("tenants")
+        .select("id")
+        .eq(
+            "code",
+            data.tenant_code
+        )
+        .execute()
+    )
+    if not tenant_response.data:
+        raise HTTPException(
+            status_code=404,
+            detail="Tenant not found"
+        )
+    tenant_id = tenant_response.data[0]["id"]
+    # 2. Create user in Supabase Auth
     auth_response = (
         supabase.auth.sign_up(
             {
@@ -19,14 +35,15 @@ def register_user(data):
             detail="User registration failed"
         )
     auth_user = auth_response.user
-    # 2. Create user profile
+    # 3. Create public.users profile
+
     profile_response = (
         supabase
         .table("users")
         .insert(
             {
                 "id": auth_user.id,
-                "tenant_id": str(data.tenant_id),
+                "tenant_id": tenant_id,
                 "role": data.role.value,
                 "name": data.name,
                 "phone": data.phone,

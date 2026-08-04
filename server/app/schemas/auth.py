@@ -9,7 +9,11 @@ class RegisterRequest(BaseModel):
         min_length=8,
         max_length=15
     )
-    tenant_id: UUID
+    tenant_code: str = Field(
+        ...,
+        min_length=2,
+        max_length=20
+    )
     role: UserRole
     name: str = Field(
         ...,
