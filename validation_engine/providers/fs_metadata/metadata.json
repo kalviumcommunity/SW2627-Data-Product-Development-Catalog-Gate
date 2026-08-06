@@ -1,0 +1,127 @@
+[
+    {
+        "key": "F1",
+        "description": "SKU must be present and non-null.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F2",
+        "description": "SKU must be 1-64 characters and match ^[A-Za-z0-9_-]+$.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F3",
+        "description": "Title must be present and non-null.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F4",
+        "description": "Title must be 1-500 characters and contain no control characters.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F5",
+        "description": "Category must be present and non-null.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F6",
+        "description": "Category must be 1-200 characters.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F7",
+        "description": "Brand should be present and non-null.",
+        "severity": "WARNING"
+    },
+    {
+        "key": "F8",
+        "description": "Brand must be 1-200 characters.",
+        "severity": "WARNING"
+    },
+    {
+        "key": "F9",
+        "description": "Price must be present and non-null.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F10",
+        "description": "Price must be a numeric decimal value.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F11",
+        "description": "Price must be greater than 0 and less than or equal to 9,999,999.99.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F12",
+        "description": "Price must not exceed two decimal places.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F13",
+        "description": "Currency must be present and non-null.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F14",
+        "description": "Currency must match the ISO 4217 three-letter uppercase format (^[A-Z]{3}$).",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F15",
+        "description": "Stock quantity must be present and non-null.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F16",
+        "description": "Stock quantity must be an integer.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F17",
+        "description": "Stock quantity must be greater than or equal to 0.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "F18",
+        "description": "Stock quantity must not exceed 999,999,999.",
+        "severity": "WARNING"
+    },
+    {
+        "key": "C1",
+        "description": "Price and currency must either both be present or both be absent.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "C2",
+        "description": "If SKU contains a recognizable category token, it must be consistent with category.",
+        "severity": "INFO"
+    },
+    {
+        "key": "C3",
+        "description": "Products belonging to the same category should use the same currency; outliers are flagged.",
+        "severity": "WARNING"
+    },
+    {
+        "key": "D1",
+        "description": "Every SKU must be unique across the dataset.",
+        "severity": "BLOCK"
+    },
+    {
+        "key": "D2",
+        "description": "Detect probable duplicate products using fuzzy similarity on title, brand, and category.",
+        "severity": "WARNING"
+    },
+    {
+        "key": "D3",
+        "description": "Detect inconsistent category values such as Books, books, and Book.",
+        "severity": "WARNING"
+    },
+    {
+        "key": "D4",
+        "description": "Detect inconsistent brand values such as Apple, APPLE, and Apple Inc.",
+        "severity": "WARNING"
+    }
+]
