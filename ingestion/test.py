@@ -1,4 +1,6 @@
-from main import IngestionService
+from pathlib import Path
+from ingestion.main import IngestionService
+
 
 def print_dataset_info(dataset):
     print("\n" + "=" * 60)
@@ -17,14 +19,20 @@ def print_dataset_info(dataset):
     print("\nComplete DataFrame:")
     print(dataset.dataframe)
 
+
 def main():
     ingestion_service = IngestionService()
+
+    test_dir = Path(__file__).parent / "tests"
+
     # Test CSV ingestion
-    csv_dataset = ingestion_service.ingest("tests/test.csv")
+    csv_dataset = ingestion_service.ingest(str(test_dir / "test.csv"))
     print_dataset_info(csv_dataset)
+
     # Test JSON ingestion
-    json_dataset = ingestion_service.ingest("tests/test.json")
+    json_dataset = ingestion_service.ingest(str(test_dir / "test.json"))
     print_dataset_info(json_dataset)
+
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,8 @@
+from pydantic import BaseModel, ConfigDict
 import pandas as pd
-from pydantic import BaseModel
 
 class Dataset(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     dataframe: pd.DataFrame
     filepath: str
