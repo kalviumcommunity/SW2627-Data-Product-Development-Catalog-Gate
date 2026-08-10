@@ -1,6 +1,9 @@
 # Orchestrator script to run the pipeline
 # Upload CSV/JSON file -> Clean Data -> Run Validation -> Run analytics -> Report using plotly and streamlit UI
 
+from shared.schemas.rule_result_metadata import RuleResultMetadata
+from validation_engine.main import ValidationEngine
+import validation_engine
 import argparse
 import logging
 
@@ -21,10 +24,16 @@ if __name__ == '__main__':
     )
     logger = logging.getLogger(__name__)
     ingestion_service = IngestionService()
+    validation_engine = ValidationEngine()
     
     file_path = args.file_path
     upload_request: UploadRequest = UploadRequest(file_path=file_path)
 
     dataset: Dataset = ingestion_service.ingest(file_path)
-    logger.info(dataset) 
+    # logger.info(dataset) 
+
+    results: list[RuleResultMetadata] = validation_engine.validate(dataset)
+    for result in results:
+        print(result)
+
     
