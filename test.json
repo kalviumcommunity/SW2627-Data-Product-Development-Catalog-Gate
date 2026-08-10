@@ -1,0 +1,74 @@
+[
+    {
+        "sku": "BK001",
+        "title": "Clean Code",
+        "category": "Books",
+        "brand": "Pearson",
+        "price": 499.99,
+        "currency": "INR",
+        "stock_quantity": 42
+    },
+    {
+        "sku": "BK002",
+        "title": "Design Patterns",
+        "category": "Books",
+        "brand": "O'Reilly",
+        "price": 799.50,
+        "currency": "INR",
+        "stock_quantity": 18
+    },
+    {
+        "sku": "BK003",
+        "title": "The Pragmatic Programmer",
+        "category": "Books",
+        "brand": "Addison-Wesley",
+        "price": 650.00,
+        "currency": "INR",
+        "stock_quantity": 25
+    },
+    {
+        "sku": "BK004",
+        "title": "Atomic Habits",
+        "category": "Books",
+        "brand": null,
+        "price": 550.75,
+        "currency": "INR",
+        "stock_quantity": 30
+    },
+    {
+        "sku": "BK005",
+        "title": "Introduction to Algorithms",
+        "category": "Books",
+        "brand": "MIT Press",
+        "price": 1200.00,
+        "currency": "INR",
+        "stock_quantity": 12
+    },
+    {
+        "sku": "BK006",
+        "title": "Refactoring",
+        "category": "Books",
+        "brand": "Addison-Wesley",
+        "price": 899.99,
+        "currency": "INR",
+        "stock_quantity": 8
+    },
+    {
+        "sku": "BK007",
+        "title": "Python Crash Course",
+        "category": "Books",
+        "brand": "No Starch Press",
+        "price": 699.00,
+        "currency": "INR",
+        "stock_quantity": 15
+    },
+    {
+        "sku": "BK008",
+        "title": "Deep Learning",
+        "category": "Books",
+        "brand": "MIT Press",
+        "price": 1499.95,
+        "currency": "INR",
+        "stock_quantity": 5
+    }
+]
