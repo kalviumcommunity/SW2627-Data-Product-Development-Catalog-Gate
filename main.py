@@ -1,18 +1,21 @@
 # Orchestrator script to run the pipeline
 # Upload CSV/JSON file -> Clean Data -> Run Validation -> Run analytics -> Report using plotly and streamlit UI
 
-from shared.schemas.rule_result_metadata import RuleResultMetadata
-from validation_engine.main import ValidationEngine
-import validation_engine
+# Required libs
 import argparse
 import logging
 
 # Required Models
+from shared.schemas.rule_result_metadata import RuleResultMetadata
 from shared.schemas.upload_request import UploadRequest
 from shared.schemas.dataset import Dataset
+from shared.schemas.profiled_dataset import ProfiledDataset
+from shared.schemas.profile import Profile
 
 # Services
 from ingestion.main import IngestionService
+from profiling.main import ProfilingService
+from validation_engine.main import ValidationEngine
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run the data pipeline")
@@ -25,6 +28,7 @@ if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     ingestion_service = IngestionService()
     validation_engine = ValidationEngine()
+    profiling_service = ProfilingService()
     
     file_path = args.file_path
     upload_request: UploadRequest = UploadRequest(file_path=file_path)
@@ -32,7 +36,16 @@ if __name__ == '__main__':
     dataset: Dataset = ingestion_service.ingest(file_path)
     # logger.info(dataset) 
 
-    results: list[RuleResultMetadata] = validation_engine.validate(dataset)
+    dataset_profile: Profile = profiling_service.profile_dataframe(dataset.dataframe)
+    print(dataset_profile)
+
+    profiled_dataset: ProfiledDataset = ProfiledDataset(
+        dataframe=dataset.dataframe,
+        filepath=dataset.filepath,
+        profile=dataset_profile
+    )
+
+    results: list[RuleResultMetadata] = validation_engine.validate(profiled_dataset)
     for result in results:
         print(result)
 

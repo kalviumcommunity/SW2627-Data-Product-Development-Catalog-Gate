@@ -1,5 +1,4 @@
-from shared.schemas.dataset import Dataset
-from shared.schemas.rule_result import RuleResult
+from shared.schemas.profiled_dataset import ProfiledDataset
 from shared.schemas.rule_result_metadata import RuleResultMetadata
 
 from validation_engine.providers.fs_metadata.main import FSMetadataProvider
@@ -8,7 +7,7 @@ from validation_engine.registry import registry
 class ValidationEngine:
     provider = FSMetadataProvider()
 
-    def validate(self, dataset: Dataset) -> list[RuleResultMetadata]:
+    def validate(self, dataset: ProfiledDataset) -> list[RuleResultMetadata]:
         rules = self.provider.get_rules()
         rules = [rule for rule in rules if rule.key.startswith("F")]
         results: list[RuleResultMetadata] = []

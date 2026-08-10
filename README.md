@@ -15,7 +15,8 @@ CatalogGate is a data quality validation engine for marketplace catalogs. It val
 
 ```
 .
-├── ingestion/          # Dataset loading and profiling
+├── ingestion/          # Dataset loading 
+├── profiling/          # Dataset profiling
 ├── validation_engine/  # Validation rule execution
 ├── shared/schemas/          # Shared data models
 ├── main.py             # Entry point
