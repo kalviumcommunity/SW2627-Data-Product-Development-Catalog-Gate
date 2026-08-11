@@ -17,7 +17,7 @@ from shared.schemas.profile import Profile
 from ingestion.main import IngestionService
 from profiling.main import ProfilingService
 from validation_engine.main import ValidationEngine
-from type_enforcment.main import enforce_types
+from type_enforcement.main import enforce_types
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run the data pipeline")
@@ -36,7 +36,9 @@ if __name__ == '__main__':
     upload_request: UploadRequest = UploadRequest(file_path=file_path)
 
     dataset: Dataset = ingestion_service.ingest(file_path)
-    enforce_types(dataset.dataframe)
+    typed_df = enforce_types(dataset.dataframe)
+    original_df = dataset.dataframe.copy()
+    dataset.dataframe = typed_df
     
     dataset_profile: Profile = profiling_service.profile_dataframe(dataset.dataframe)
     # print(dataset_profile)
