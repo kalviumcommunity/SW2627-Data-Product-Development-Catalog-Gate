@@ -1,0 +1,111 @@
+{
+  "generated_at": "2026-08-11T06:01:35.628846Z",
+  "filepath": "test.json",
+  "ext": "json",
+  "encoding": "utf-8",
+  "profile": {
+    "row_count": 8,
+    "column_count": 7,
+    "duplicate_count": 0,
+    "duplicate_percentage": 0.0,
+    "columns": [
+      {
+        "name": "sku",
+        "dtype": "str",
+        "null_count": 0,
+        "null_percentage": 0.0,
+        "unique_count": 8
+      },
+      {
+        "name": "title",
+        "dtype": "str",
+        "null_count": 0,
+        "null_percentage": 0.0,
+        "unique_count": 8
+      },
+      {
+        "name": "category",
+        "dtype": "str",
+        "null_count": 0,
+        "null_percentage": 0.0,
+        "unique_count": 1
+      },
+      {
+        "name": "brand",
+        "dtype": "str",
+        "null_count": 1,
+        "null_percentage": 12.5,
+        "unique_count": 5
+      },
+      {
+        "name": "price",
+        "dtype": "float64",
+        "null_count": 0,
+        "null_percentage": 0.0,
+        "unique_count": 8
+      },
+      {
+        "name": "currency",
+        "dtype": "str",
+        "null_count": 0,
+        "null_percentage": 0.0,
+        "unique_count": 1
+      },
+      {
+        "name": "stock_quantity",
+        "dtype": "int64",
+        "null_count": 0,
+        "null_percentage": 0.0,
+        "unique_count": 8
+      }
+    ],
+    "numerical": {
+      "price": {
+        "min": 499.99,
+        "max": 1499.95,
+        "mean": 849.8974999999999,
+        "median": 749.25
+      },
+      "stock_quantity": {
+        "min": 5.0,
+        "max": 42.0,
+        "mean": 19.375,
+        "median": 16.5
+      }
+    }
+  },
+  "total_rules": 18,
+  "total_failed_rules": 2,
+  "blocked": [],
+  "warning": [
+    {
+      "rule": {
+        "key": "F7",
+        "description": "Brand should be present and non-null.",
+        "severity": "WARNING"
+      },
+      "result": {
+        "passed": false,
+        "failed_rows": [
+          3
+        ],
+        "message": "Brand is required."
+      }
+    },
+    {
+      "rule": {
+        "key": "F8",
+        "description": "Brand must be 1-200 characters.",
+        "severity": "WARNING"
+      },
+      "result": {
+        "passed": false,
+        "failed_rows": [
+          3
+        ],
+        "message": "Brand must be between 1 and 200 characters."
+      }
+    }
+  ],
+  "errors": []
+}

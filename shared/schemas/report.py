@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from shared.schemas.rule_result_metadata import RuleResultMetadata
 from shared.schemas.profile import Profile
@@ -7,14 +7,18 @@ from shared.schemas.profile import Profile
 class Report(BaseModel):
     # generated at
     generated_at: datetime
-    # data profiling results
-    profile: Profile
 
-    # validation results
-    total_rules: int
-    total_failed_rules: int
+    filepath: str | None = None
+    ext: str | None = None
+    encoding: str | None = None
 
-    blocked: list[RuleResultMetadata]
-    warning: list[RuleResultMetadata]
-    
+    profile: Profile | None = None
 
+    total_rules: int = 0
+    total_failed_rules: int = 0
+
+    blocked: list[RuleResultMetadata] = Field(default_factory=list)
+    warning: list[RuleResultMetadata] = Field(default_factory=list)
+
+    # only for pipeline errors, empty otherwise
+    errors: list[str] = Field(default_factory=list)
