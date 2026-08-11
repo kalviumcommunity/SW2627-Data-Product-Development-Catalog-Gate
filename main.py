@@ -2,6 +2,7 @@
 # Upload CSV/JSON file -> Clean Data -> Run Validation -> Run analytics -> Report using plotly and streamlit UI
 
 # Required libs
+from shared.schemas.severity import Severity
 import argparse
 import logging
 
@@ -16,6 +17,7 @@ from shared.schemas.profile import Profile
 from ingestion.main import IngestionService
 from profiling.main import ProfilingService
 from validation_engine.main import ValidationEngine
+from type_enforcment.main import enforce_types
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run the data pipeline")
@@ -34,10 +36,10 @@ if __name__ == '__main__':
     upload_request: UploadRequest = UploadRequest(file_path=file_path)
 
     dataset: Dataset = ingestion_service.ingest(file_path)
-    # logger.info(dataset) 
-
+    enforce_types(dataset.dataframe)
+    
     dataset_profile: Profile = profiling_service.profile_dataframe(dataset.dataframe)
-    print(dataset_profile)
+    # print(dataset_profile)
 
     profiled_dataset: ProfiledDataset = ProfiledDataset(
         dataframe=dataset.dataframe,
@@ -46,7 +48,15 @@ if __name__ == '__main__':
     )
 
     results: list[RuleResultMetadata] = validation_engine.validate(profiled_dataset)
-    for result in results:
-        print(result)
+    failed = [result for result in results if result.result.passed == False]
+    if failed:
+        logger.warning(f"Found {len(failed)} failed validations")
+        for f in failed:
+            if f.rule.severity == Severity.BLOCK:
+                logger.error(f)
+            else:
+                logger.warning(f)
+    else: 
+        logger.info("All validations passed")
 
     
