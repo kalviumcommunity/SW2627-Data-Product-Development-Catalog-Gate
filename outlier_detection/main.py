@@ -3,36 +3,42 @@ import pandas as pd
 
 class OutlierDetectionService:
     def find_outliers(self, df: pd.DataFrame) -> list[CategoryOutlierReport]:
-        outlier_reports: list[CategoryOutlierReport] = []
-        for category, group in df.groupby('category'):
-            for column in ['price', 'stock_quantity']:
-                q1 = group[column].quantile(0.25)
-                q3 = group[column].quantile(0.75)
-                iqr = q3 - q1
+        required = ["sku", "price", "stock_quantity"]
 
-                lower_bound = q1 - 1.5 * iqr
-                upper_bound = q3 + 1.5 * iqr
+        if all(column in df.columns for column in required):
+            outlier_reports: list[CategoryOutlierReport] = []
+            for category, group in df.groupby('category'):
+                for column in ['price', 'stock_quantity']:
+                    q1 = group[column].quantile(0.25)
+                    q3 = group[column].quantile(0.75)
+                    iqr = q3 - q1
 
-                outliers = group[
-                    (group[column] < lower_bound) |
-                    (group[column] > upper_bound)
-                ]
+                    lower_bound = q1 - 1.5 * iqr
+                    upper_bound = q3 + 1.5 * iqr
 
-                if not outliers.empty:
-                    outlier_reports.append(
-                    CategoryOutlierReport(
-                        category=category,
-                        column=column,
-                        outliers=[
-                            Outlier(
-                                sku=row["sku"],
-                                value=row[column],
-                                lower_bound=lower_bound,
-                                upper_bound=upper_bound,
+                    outliers = group[
+                        (group[column] < lower_bound) |
+                        (group[column] > upper_bound)
+                    ]
+
+                    if not outliers.empty:
+                        outlier_reports.append(
+                            CategoryOutlierReport(
+                                category=category,
+                                column=column,
+                                outliers=[
+                                    Outlier(
+                                        sku=row.sku,
+                                        value=getattr(row, column),
+                                        lower_bound=lower_bound,
+                                        upper_bound=upper_bound,
+                                    )
+                                    for row in outliers.itertuples(index=False)
+                                ]
                             )
-                            for _, row in outliers.iterrows()
-                        ],
-                    )
-                )
-        
-        return outlier_reports
+                        )
+            return outlier_reports
+
+        else:
+            raise ValueError("Required columns are missing from the DataFrame")
+            

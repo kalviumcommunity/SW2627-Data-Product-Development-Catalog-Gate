@@ -1,4 +1,5 @@
 # Orchestrator script to run the pipeline
+
 # Upload CSV/JSON file -> Clean Data -> Run Validation -> Run analytics -> Report using plotly and streamlit UI
 
 # Required libs
@@ -22,15 +23,23 @@ from type_enforcement.main import enforce_types
 from reporting.main import ReportService
 from outlier_detection.main import OutlierDetectionService
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the data pipeline")
-    parser.add_argument("file_path", type=str, help="Path to the CSV/JSON file")
+    parser.add_argument(
+        "file_path",
+        type=str,
+        help="Path to the CSV/JSON file"
+    )
     args = parser.parse_args()
+
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     )
+
     logger = logging.getLogger(__name__)
+
     ingestion_service = IngestionService()
     validation_engine = ValidationEngine()
     profiling_service = ProfilingService()
@@ -38,8 +47,8 @@ if __name__ == '__main__':
     outlier_detection_service = OutlierDetectionService()
 
     file_path = args.file_path
-    info_file_ext = file_path.split('.')[-1].lower()
-    info_file_encoding = 'utf-8'
+    info_file_ext = file_path.split(".")[-1].lower()
+    info_file_encoding = "utf-8"
 
     # Pre-processing validation
     if not os.path.exists(file_path):
@@ -54,7 +63,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # Allowed formats
-    if info_file_ext not in ['json', 'csv']:
+    if info_file_ext not in ["json", "csv"]:
         error = f"Invalid file format: {info_file_ext}"
         logger.error(error)
 
@@ -68,7 +77,7 @@ if __name__ == '__main__':
 
     # Allowed encoding
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             f.read()
 
     except UnicodeDecodeError:
@@ -84,64 +93,96 @@ if __name__ == '__main__':
         report_service.save_report(report)
         sys.exit(1)
 
-    logger.info(f"Starting data pipeline for file: {file_path}")
-    
-    upload_request = UploadRequest(file_path=file_path)
-    dataset: Dataset = ingestion_service.ingest(file_path)
-    original_df = dataset.dataframe.copy()
-    
-    dataset.dataframe = enforce_types(dataset.dataframe)
-    logger.info("Generating dataset profile...")
-    dataset_profile: Profile = profiling_service.profile_dataframe(
-        dataset.dataframe
-    )
+    # Pipeline
+    try:
+        logger.info(f"Starting data pipeline for file: {file_path}")
 
-    outlier_reports = outlier_detection_service.find_outliers(dataset.dataframe)
+        upload_request = UploadRequest(file_path=file_path)
 
-   # Validation
-    profiled_dataset = ProfiledDataset(
-        dataframe=dataset.dataframe,
-        filepath=dataset.filepath,
-        profile=dataset_profile
-    )
+        dataset: Dataset = ingestion_service.ingest(file_path)
+        original_df = dataset.dataframe.copy()
 
-    logger.info("Running validation engine...")
-    results: list[RuleResultMetadata] = validation_engine.validate(profiled_dataset)
-    
-    failed = [result for result in results if not result.result.passed ]
+        dataset.dataframe = enforce_types(dataset.dataframe)
 
-    if failed:
-        logger.warning(
-            f"Validation completed. "
-            f"Found {len(failed)} failed rules "
-            f"out of {len(results)} total rules."
+        logger.info("Generating dataset profile...")
+        dataset_profile: Profile = profiling_service.profile_dataframe(
+            dataset.dataframe
         )
-        for result in failed:
-            msg = (
-                f"Rule {result.rule.key}: "
-                f"{result.rule.description} "
-                f"(Failed rows: {result.result.failed_rows})"
+
+        logger.info("Detecting outliers...")
+        outlier_reports = outlier_detection_service.find_outliers(
+            dataset.dataframe
+        )
+
+        # Validation
+        profiled_dataset = ProfiledDataset(
+            dataframe=dataset.dataframe,
+            filepath=dataset.filepath,
+            profile=dataset_profile
+        )
+
+        logger.info("Running validation engine...")
+        results: list[RuleResultMetadata] = validation_engine.validate(
+            profiled_dataset
+        )
+
+        failed = [
+            result
+            for result in results
+            if not result.result.passed
+        ]
+
+        if failed:
+            logger.warning(
+                f"Validation completed. "
+                f"Found {len(failed)} failed rules "
+                f"out of {len(results)} total rules."
             )
-            if result.rule.severity == Severity.BLOCK:
-                logger.error(msg)
-            else:
-                logger.warning(msg)
-    else:
-        logger.info(
-            "Validation completed. All rules passed successfully."
+
+            for result in failed:
+                msg = (
+                    f"Rule {result.rule.key}: "
+                    f"{result.rule.description} "
+                    f"(Failed rows: {result.result.failed_rows})"
+                )
+
+                if result.rule.severity == Severity.BLOCK:
+                    logger.error(msg)
+                else:
+                    logger.warning(msg)
+
+        else:
+            logger.info(
+                "Validation completed. All rules passed successfully."
+            )
+
+        # Report
+        report = report_service.create_report(
+            filepath=file_path,
+            ext=info_file_ext,
+            encoding=info_file_encoding,
+            profile=dataset_profile,
+            results=results,
+            outliers=outlier_reports
         )
 
-    # Report
-    report = report_service.create_report(
-        filepath=file_path,
-        ext=info_file_ext,
-        encoding=info_file_encoding,
-        profile=dataset_profile,
-        results=results,
-        outliers=outlier_reports
-    )
+        report_path = report_service.save_report(report)
 
-    report_path = report_service.save_report(report)
+        logger.info(f"Pipeline report saved: {report_path}")
+        logger.info("Pipeline processing completed successfully.")
 
-    logger.info(f"Pipeline report saved: {report_path}")
-    logger.info("Pipeline processing completed successfully.")
+    except Exception as e:
+        error = f"Pipeline failed: {str(e)}"
+
+        logger.exception(error)
+
+        report = report_service.create_report(
+            filepath=file_path,
+            ext=info_file_ext,
+            encoding=info_file_encoding,
+            errors=[error]
+        )
+
+        report_service.save_report(report)
+
+        sys.exit(1)
