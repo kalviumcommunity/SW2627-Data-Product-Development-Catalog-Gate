@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 
 from shared.schemas.rule_result_metadata import RuleResultMetadata
 from shared.schemas.profile import Profile
+from shared.schemas.cat_outlier_report import CategoryOutlierReport
 
 class Report(BaseModel):
     # generated at
@@ -19,6 +20,8 @@ class Report(BaseModel):
 
     blocked: list[RuleResultMetadata] = Field(default_factory=list)
     warning: list[RuleResultMetadata] = Field(default_factory=list)
+
+    outliers: list[CategoryOutlierReport] = Field(default_factory=list)
 
     # only for pipeline errors, empty otherwise
     errors: list[str] = Field(default_factory=list)

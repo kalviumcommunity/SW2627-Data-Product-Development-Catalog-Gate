@@ -20,6 +20,7 @@ from profiling.main import ProfilingService
 from validation_engine.main import ValidationEngine
 from type_enforcement.main import enforce_types
 from reporting.main import ReportService
+from outlier_detection.main import OutlierDetectionService
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Run the data pipeline")
@@ -34,6 +35,7 @@ if __name__ == '__main__':
     validation_engine = ValidationEngine()
     profiling_service = ProfilingService()
     report_service = ReportService()
+    outlier_detection_service = OutlierDetectionService()
 
     file_path = args.file_path
     info_file_ext = file_path.split('.')[-1].lower()
@@ -94,6 +96,8 @@ if __name__ == '__main__':
         dataset.dataframe
     )
 
+    outlier_reports = outlier_detection_service.find_outliers(dataset.dataframe)
+
    # Validation
     profiled_dataset = ProfiledDataset(
         dataframe=dataset.dataframe,
@@ -134,6 +138,7 @@ if __name__ == '__main__':
         encoding=info_file_encoding,
         profile=dataset_profile,
         results=results,
+        outliers=outlier_reports
     )
 
     report_path = report_service.save_report(report)
