@@ -1,3 +1,4 @@
+from shared.schemas.cat_outlier_report import CategoryOutlierReport
 from datetime import datetime, timezone
 
 from shared.schemas.report import Report
@@ -15,6 +16,7 @@ class ReportService:
         encoding: str | None = None,
         profile: Profile | None = None,
         results: list[RuleResultMetadata] | None = None,
+        outliers: list[CategoryOutlierReport] | None = None,
         errors: list[str] | None = None,
     ) -> Report:
 
@@ -37,6 +39,7 @@ class ReportService:
                 r for r in failed
                 if r.rule.severity == Severity.WARNING
             ],
+            outliers=outliers or [],
             errors=errors or [],
         )
 
