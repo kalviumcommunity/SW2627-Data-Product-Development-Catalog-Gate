@@ -3,6 +3,7 @@
 # Upload CSV/JSON file -> Clean Data -> Run Validation -> Run analytics -> Report using plotly and streamlit UI
 
 # Required libs
+from util import normalize_strings
 import argparse
 import logging
 import os
@@ -19,10 +20,12 @@ from shared.schemas.severity import Severity
 from ingestion.main import IngestionService
 from profiling.main import ProfilingService
 from validation_engine.main import ValidationEngine
-from type_enforcement.main import enforce_types
 from reporting.main import ReportService
 from outlier_detection.main import OutlierDetectionService
 
+# Utils
+from util.enforce_types import enforce_types
+from util.normalize_strings import normalize_strings
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the data pipeline")
@@ -100,9 +103,25 @@ if __name__ == "__main__":
         upload_request = UploadRequest(file_path=file_path)
 
         dataset: Dataset = ingestion_service.ingest(file_path)
-        original_df = dataset.dataframe.copy()
-
         dataset.dataframe = enforce_types(dataset.dataframe)
+        print(dataset.dataframe)
+
+        dataset.dataframe = normalize_strings(
+            dataset.dataframe,
+            columns=["category"],
+            lowercase=True,
+            strip=True,
+            remove_special=True
+        )
+        dataset.dataframe = normalize_strings(
+            dataset.dataframe,
+            columns=["title", "brand"],
+            lowercase=False,
+            strip=True,
+            remove_special=True
+        )
+
+        print(dataset.dataframe)
 
         logger.info("Generating dataset profile...")
         dataset_profile: Profile = profiling_service.profile_dataframe(
