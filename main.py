@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
         dataset: Dataset = ingestion_service.ingest(file_path)
         dataset.dataframe = enforce_types(dataset.dataframe)
-        print(dataset.dataframe)
+        # print(dataset.dataframe)
 
         dataset.dataframe = normalize_strings(
             dataset.dataframe,
@@ -121,7 +121,7 @@ if __name__ == "__main__":
             remove_special=True
         )
 
-        print(dataset.dataframe)
+        # print(dataset.dataframe)
 
         logger.info("Generating dataset profile...")
         dataset_profile: Profile = profiling_service.profile_dataframe(
