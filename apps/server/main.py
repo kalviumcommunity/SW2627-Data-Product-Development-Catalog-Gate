@@ -5,6 +5,7 @@ from app.routes import (
     user_routes,
     tenant_routes
 )
+
 app = FastAPI(
     title="Catalog Gate API",
     version="1.0.0"
@@ -22,6 +23,7 @@ app.include_router(
     tenant_routes.router,
     prefix="/api/v1"
 )
+
 # Health checks
 @app.get("/")
 async def read_root():
