@@ -1,3 +1,4 @@
+from apps.server.app.routes import catalog_routes
 from fastapi import FastAPI
 
 from app.routes import (
@@ -21,6 +22,10 @@ app.include_router(
 )
 app.include_router(
     tenant_routes.router,
+    prefix="/api/v1"
+)
+app.include_router(
+    catalog_routes.router,
     prefix="/api/v1"
 )
 
