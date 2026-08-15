@@ -1,27 +1,44 @@
-create or replace function public.custom_access_token_hook(event jsonb)
-returns jsonb
-language plpgsql
-stable
-as $$
-declare
+-- Needs the security definer to bypass public.users rls
+-- also, was unable to find a way to enable this via non-UI way (config.toml apparently works solely for local setting)
+-- for now need to enable it manually via Supabase UI: authentication > auth hooks > add hook
+
+CREATE OR REPLACE FUNCTION public.custom_access_token_hook(event jsonb)
+RETURNS jsonb
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
     claims jsonb;
     user_role public.user_role;
-begin
-    select u.user_role
-    into user_role
-    from public.users u
-    where u.id = (event->>'user_id')::uuid;
+    tenant_id uuid;
+BEGIN
+    SELECT
+        u.user_role,
+        u.tenant_id
+    INTO
+        user_role,
+        tenant_id
+    FROM public.users u
+    WHERE u.id = (event->>'user_id')::uuid;
 
     claims := event->'claims';
 
     claims := jsonb_set(
         claims,
         '{user_role}',
-        coalesce(to_jsonb(user_role), 'null'::jsonb)
+        COALESCE(to_jsonb(user_role), 'null'::jsonb)
     );
 
-    return jsonb_set(event, '{claims}', claims);
-end;
+    claims := jsonb_set(
+        claims,
+        '{tenant_id}',
+        COALESCE(to_jsonb(tenant_id), 'null'::jsonb)
+    );
+
+    RETURN jsonb_set(event, '{claims}', claims);
+END;
 $$;
 
 grant usage on schema public to supabase_auth_admin;

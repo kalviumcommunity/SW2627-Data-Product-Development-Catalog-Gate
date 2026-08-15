@@ -1,10 +1,10 @@
 from fastapi import HTTPException
-from app.supabase_client import supabase
+from app.supabase_client import supabase, service_supabase
 
 def register_user(data):
     # 1. Find tenant using tenant code
     tenant_response = (
-        supabase
+        service_supabase
         .table("tenants")
         .select("id")
         .eq(
@@ -13,6 +13,7 @@ def register_user(data):
         )
         .execute()
     )
+    print(tenant_response)
     if not tenant_response.data:
         raise HTTPException(
             status_code=404,
@@ -37,7 +38,7 @@ def register_user(data):
     # 3. Create public.users profile
 
     profile_response = (
-        supabase
+        service_supabase
         .table("users")
         .insert(
             {
