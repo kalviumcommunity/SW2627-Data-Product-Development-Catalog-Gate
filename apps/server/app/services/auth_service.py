@@ -43,7 +43,7 @@ def register_user(data):
             {
                 "id": auth_user.id,
                 "tenant_id": tenant_id,
-                "role": data.role.value,
+                "user_role": data.role.value,
                 "name": data.name,
                 "phone": data.phone,
                 "email": data.email

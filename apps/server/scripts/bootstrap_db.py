@@ -90,7 +90,7 @@ def bootstrapping():
         .insert({
             "id": auth_user.id,
             "tenant_id": tenant_id,
-            "role": "super_admin",
+            "user_role": "super_admin",
             "name": SUPER_ADMIN_NAME,
             "phone": SUPER_ADMIN_PHONE,
             "email": SUPER_ADMIN_MAIL,
