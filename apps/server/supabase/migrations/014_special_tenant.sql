@@ -7,6 +7,11 @@ ON tenants (LOWER(code));
 
 -- A super admin may create tenants, provided the new tenant isn't the reserved CatalogGate tenant.
 -- CatalogGate tenant will only be created once by the startup script
+
+DROP POLICY IF EXISTS super_admins_can_insert_tenants
+ON tenants;
+
+
 CREATE POLICY super_admins_can_insert_tenants
 ON tenants
 FOR INSERT
