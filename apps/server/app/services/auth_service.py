@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from app.supabase_client import supabase
 
-
 def register_user(data):
     # 1. Find tenant using tenant code
     tenant_response = (

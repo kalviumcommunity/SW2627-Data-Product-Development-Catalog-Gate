@@ -29,3 +29,9 @@ class UserProfileResponse(BaseModel):
     role: UserRole
     name: str
     phone: str | None = None
+
+class CurrentUser(BaseModel):
+    id: UUID
+    tenant_id: UUID
+    role: UserRole
+    access_token: str
