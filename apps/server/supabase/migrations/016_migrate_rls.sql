@@ -362,7 +362,7 @@ WITH CHECK (
         FROM users u
         WHERE u.id = auth.uid()
     )
-    AND role = 'vendor'
+    AND user_role = 'vendor'
 );
 
 
