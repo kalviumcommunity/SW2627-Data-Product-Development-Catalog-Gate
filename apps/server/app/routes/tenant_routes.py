@@ -1,7 +1,8 @@
+from app.schemas.current_user import CurrentUser
 from fastapi import APIRouter, Depends, status
 from supabase import Client
 
-from app.auth.dependency import get_user_supabase
+from app.auth.dependency import get_current_user
 from app.schemas.tenant import TenantCreate, TenantResponse
 from app.services.tenant_service import (
     register_tenant,
@@ -20,10 +21,10 @@ router = APIRouter(
 )
 def create_tenant(
     data: TenantCreate,
-    supabase: Client = Depends(get_user_supabase),
+    current_user: CurrentUser = Depends(get_current_user),
 ):
     return register_tenant(
-        supabase,
+        current_user.supabase,
         data,
     )
 
@@ -34,6 +35,6 @@ def create_tenant(
     status_code=status.HTTP_200_OK,
 )
 def get_tenants(
-    supabase: Client = Depends(get_user_supabase),
+    current_user: CurrentUser = Depends(get_current_user),
 ):
-    return get_all_tenants(supabase)
+    return get_all_tenants(current_user.supabase)

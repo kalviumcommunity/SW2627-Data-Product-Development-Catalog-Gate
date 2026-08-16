@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from supabase import create_client, Client
+from supabase import create_client, Client, ClientOptions
 
 load_dotenv()
 
@@ -26,12 +26,17 @@ supabase: Client = create_client(
 
 # user scoped client for user triggered operations
 def create_user_client(access_token: str) -> Client:
-    client = create_client(
+    options = ClientOptions(
+        headers={
+            "Authorization": f"Bearer {access_token}",
+        }
+    )
+
+    return create_client(
         SUPABASE_URL,
         SUPABASE_PUBLISHABLE_KEY,
+        options=options,
     )
-    client.postgrest.auth(access_token)
-    return client
 
 # service scoped client for system triggered operations
 service_supabase: Client = create_client(

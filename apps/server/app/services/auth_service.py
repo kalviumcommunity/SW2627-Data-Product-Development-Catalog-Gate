@@ -13,7 +13,7 @@ def register_user(data):
         )
         .execute()
     )
-    print(tenant_response)
+    # print(tenant_response)
     if not tenant_response.data:
         raise HTTPException(
             status_code=404,
