@@ -2,10 +2,14 @@
 # get one for catalog record
     # must contain the report (repor will be joined with profile to get the profile data)
 
-from fastapi import APIRouter
+from app.schemas.current_user import CurrentUser
+from fastapi import APIRouter, UploadFile, File
 from fastapi import Depends
-from app.auth.dependency import get_user_supabase
 from supabase import Client
+
+from app.auth.dependency import get_current_user
+from app.services.catalog_service import create_catalog_upload
+
 
 router = APIRouter(
     prefix="/catalog",
@@ -14,12 +18,22 @@ router = APIRouter(
 
 @router.get("/uploads")
 def get_uploads(
-    supabase: Client = Depends(get_user_supabase),
+    current_user: CurrentUser = Depends(get_current_user),
 ):
     return (
-        supabase
+        current_user.supabase
         .table("catalog_uploads")
         .select("*")
         .execute()
         .data
+    )
+
+@router.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    return await create_catalog_upload(
+        current_user=current_user,
+        file=file,
     )
