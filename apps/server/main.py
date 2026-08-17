@@ -1,10 +1,21 @@
-from apps.server.app.routes import catalog_routes
+import sys
+from pathlib import Path
+
+SERVER_DIR = Path(__file__).resolve().parent
+ROOT_DIR = SERVER_DIR.parent.parent
+
+if str(SERVER_DIR) not in sys.path:
+    sys.path.insert(0, str(SERVER_DIR))
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from fastapi import FastAPI
 
 from app.routes import (
     auth_routes,
     user_routes,
-    tenant_routes
+    tenant_routes,
+    catalog_routes,
 )
 
 app = FastAPI(
