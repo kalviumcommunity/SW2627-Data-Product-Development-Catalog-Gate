@@ -1,26 +1,29 @@
 from pathlib import Path
+import io
+
 import pandas as pd
+
 from shared.schemas.dataset import Dataset
 
+
 class IngestionService:
-    def ingest(self,file_path:str) -> Dataset:
-        self.file_path = Path(file_path)
+
+    def ingest(
+        self,
+        file: bytes,
+        filename: str,
+    ) -> Dataset:
         """
         Reads a CSV or JSON file and returns a Dataset object.
         """
 
-        if not self.file_path.exists():
-            raise FileNotFoundError(
-                f"{self.file_path} does not exist."
-            )
-
-        extension = self.file_path.suffix.lower()
+        extension = Path(filename).suffix.lower()
 
         if extension == ".csv":
-            dataframe = self._ingest_csv()
+            dataframe = self._ingest_csv(file)
 
         elif extension == ".json":
-            dataframe = self._ingest_json()
+            dataframe = self._ingest_json(file)
 
         else:
             raise ValueError(
@@ -29,11 +32,11 @@ class IngestionService:
 
         return Dataset(
             dataframe=dataframe,
-            filepath=str(self.file_path)
+            filepath=filename,
         )
 
-    def _ingest_csv(self) -> pd.DataFrame:
-        return pd.read_csv(self.file_path)
+    def _ingest_csv(self, file: bytes) -> pd.DataFrame:
+        return pd.read_csv(io.BytesIO(file))
 
-    def _ingest_json(self) -> pd.DataFrame:
-        return pd.read_json(self.file_path)
+    def _ingest_json(self, file: bytes) -> pd.DataFrame:
+        return pd.read_json(io.BytesIO(file))

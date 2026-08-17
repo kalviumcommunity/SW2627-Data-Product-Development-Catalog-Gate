@@ -8,6 +8,7 @@ import argparse
 import logging
 import os
 import sys
+import io
 
 # Required Models
 from shared.schemas.rule_result_metadata import RuleResultMetadata
@@ -101,8 +102,10 @@ if __name__ == "__main__":
         logger.info(f"Starting data pipeline for file: {file_path}")
 
         upload_request = UploadRequest(file_path=file_path)
+        with open(upload_request.file_path, "rb") as f:
+            file_content = f.read()
 
-        dataset: Dataset = ingestion_service.ingest(file_path)
+        dataset: Dataset = ingestion_service.ingest(file=file_content, filename=upload_request.file_path)
         dataset.dataframe = enforce_types(dataset.dataframe)
         # print(dataset.dataframe)
 
