@@ -3,15 +3,15 @@ import logging
 import sys
 from pathlib import Path
 
-SERVER_DIR = Path(__file__).resolve().parent.parent
-ROOT_DIR = SERVER_DIR.parent.parent
+WORKER_DIR = Path(__file__).resolve().parent
+ROOT_DIR = WORKER_DIR.parent.parent
 
-if str(SERVER_DIR) not in sys.path:
-    sys.path.insert(0, str(SERVER_DIR))
+if str(WORKER_DIR) not in sys.path:
+    sys.path.insert(0, str(WORKER_DIR))
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from app.supabase_client import service_supabase
+from supabase_client import service_supabase
 
 from ingestion.main import IngestionService
 from profiling.main import ProfilingService
@@ -24,6 +24,12 @@ from shared.schemas.dataset import Dataset
 from shared.schemas.profiled_dataset import ProfiledDataset
 from shared.schemas.profile import Profile
 from shared.schemas.severity import Severity
+from shared.schemas.report import Report
+from shared.schemas.database import (
+    CatalogUploadJob,
+    ReportDBInsert,
+    DatasetProfileDBInsert,
+)
 
 from util.enforce_types import enforce_types
 from util.normalize_strings import normalize_strings
@@ -40,7 +46,7 @@ CATALOG_UPLOADS_BUCKET = "catalog-uploads"
 POLL_INTERVAL_SECONDS = 10
 
 
-def get_next_upload():
+def get_next_upload() -> CatalogUploadJob | None:
     result = (
         service_supabase
         .rpc("claim_next_catalog_upload")
@@ -50,17 +56,19 @@ def get_next_upload():
     if not result.data:
         return None
 
-    if isinstance(result.data, list):
-        return result.data[0] if result.data else None
+    job = result.data[0] if isinstance(result.data, list) and result.data else result.data
 
-    return result.data
+    if not isinstance(job, dict) or not job.get("id"):
+        return None
+
+    return CatalogUploadJob.model_validate(job)
 
 
-def download_upload(upload_job: dict) -> bytes:
-    filepath = upload_job["filepath"]
+def download_upload(upload_job: CatalogUploadJob) -> bytes:
+    filepath = upload_job.filepath
     logger.info(
         "Downloading upload %s from storage: %s",
-        upload_job["id"],
+        upload_job.id,
         filepath,
     )
     return (
@@ -76,21 +84,21 @@ def get_file_extension(filepath: str) -> str:
 
 
 def process_upload(
-    upload_job: dict,
+    upload_job: CatalogUploadJob,
     ingestion_service: IngestionService,
     validation_engine: ValidationEngine,
     profiling_service: ProfilingService,
     report_service: ReportService,
     outlier_detection_service: OutlierDetectionService,
-):
+) -> Report:
 
-    filepath = upload_job["filepath"]
+    filepath = upload_job.filepath
     extension = get_file_extension(filepath)
     encoding = "utf-8"
 
     logger.info(
         "Processing upload %s: %s",
-        upload_job["id"],
+        upload_job.id,
         filepath,
     )
 
@@ -188,7 +196,7 @@ def process_upload(
         )
 
 
-    report = report_service.create_report(
+    report: Report = report_service.create_report(
         filepath=filepath,
         ext=extension,
         encoding=encoding,
@@ -197,20 +205,13 @@ def process_upload(
         outliers=outlier_reports,
     )
 
-    report_path = report_service.save_report(report)
-
-    logger.info(
-        "Pipeline report saved: %s",
-        report_path,
-    )
-
     logger.info(
         "Pipeline processing completed successfully "
         "for upload %s.",
-        upload_job["id"],
+        upload_job.id,
     )
 
-    return report_path
+    return report
 
 
 async def main():
@@ -239,10 +240,10 @@ async def main():
         try:
             logger.info(
                 "Claimed upload job: %s",
-                upload_job["id"],
+                upload_job.id,
             )
 
-            process_upload(
+            report: Report = process_upload(
                 upload_job=upload_job,
                 ingestion_service=ingestion_service,
                 validation_engine=validation_engine,
@@ -251,26 +252,53 @@ async def main():
                 outlier_detection_service=outlier_detection_service,
             )
 
+            report_db = ReportDBInsert.from_report(
+                report=report,
+                upload_job=upload_job,
+            )
+
+            report_result = (
+                service_supabase
+                .table("reports")
+                .insert(report_db.to_db_dict())
+                .execute()
+            )
+            report_record = report_result.data[0]
+
+            if report.profile:
+                profile_db = DatasetProfileDBInsert.from_profile(
+                    profile=report.profile,
+                    report_id=report_record["id"],
+                    tenant_id=upload_job.tenant_id,
+                )
+
+                (
+                    service_supabase
+                    .table("dataset_profiles")
+                    .insert(profile_db.to_db_dict())
+                    .execute()
+                )
+
             (
                 service_supabase
                 .table("catalog_uploads")
                 .update({
                     "status": "COMPLETED",
                 })
-                .eq("id", upload_job["id"])
+                .eq("id", str(upload_job.id))
                 .execute()
             )
 
             logger.info(
                 "Upload %s marked as COMPLETED.",
-                upload_job["id"],
+                upload_job.id,
             )
 
         except Exception as e:
 
             logger.exception(
                 "Failed to process upload %s: %s",
-                upload_job["id"],
+                upload_job.id,
                 str(e),
             )
 
@@ -281,19 +309,19 @@ async def main():
                     .update({
                         "status": "FAILED",
                     })
-                    .eq("id", upload_job["id"])
+                    .eq("id", str(upload_job.id))
                     .execute()
                 )
 
                 logger.info(
                     "Upload %s marked as FAILED.",
-                    upload_job["id"],
+                    upload_job.id,
                 )
 
             except Exception:
                 logger.exception(
                     "Failed to mark upload %s as FAILED.",
-                    upload_job["id"],
+                    upload_job.id,
                 )
 
 
