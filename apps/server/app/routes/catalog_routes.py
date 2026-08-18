@@ -1,14 +1,14 @@
-# get all for catalog records 
-# get one for catalog record
-    # must contain the report (repor will be joined with profile to get the profile data)
+from uuid import UUID
+from fastapi import APIRouter, UploadFile, File, Depends
 
 from app.schemas.current_user import CurrentUser
-from fastapi import APIRouter, UploadFile, File
-from fastapi import Depends
-from supabase import Client
-
 from app.auth.dependency import get_current_user
-from app.services.catalog_service import create_catalog_upload
+from app.services.catalog_service import (
+    create_catalog_upload,
+    get_catalog_upload_by_id,
+    get_report_by_id,
+    get_profile_by_id,
+)
 
 
 router = APIRouter(
@@ -16,20 +16,58 @@ router = APIRouter(
     tags=["Catalog"]
 )
 
+
 @router.get("/uploads")
 def get_uploads(
     current_user: CurrentUser = Depends(get_current_user),
 ):
-# need to put joins here - the join must be between catalog_uploads and report
-# see report -> fetch the report and the corresponding profile
-# show the report + profile as one report
     return (
         current_user.supabase
         .table("catalog_uploads")
-        .select("*")
+        .select("""
+            *,
+            reports!reports_catalog_upload_id_fkey(
+                *,
+                dataset_profiles!dataset_profiles_report_id_fkey(*)
+            )
+        """)
         .execute()
         .data
     )
+
+
+@router.get("/uploads/{upload_id}")
+def get_upload_by_id(
+    upload_id: UUID,
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    return get_catalog_upload_by_id(
+        current_user=current_user,
+        upload_id=upload_id,
+    )
+
+
+@router.get("/reports/{report_id}")
+def get_report(
+    report_id: UUID,
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    return get_report_by_id(
+        current_user=current_user,
+        report_id=report_id,
+    )
+
+
+@router.get("/profiles/{profile_id}")
+def get_profile(
+    profile_id: UUID,
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    return get_profile_by_id(
+        current_user=current_user,
+        profile_id=profile_id,
+    )
+
 
 @router.post("/upload")
 async def upload_file(
