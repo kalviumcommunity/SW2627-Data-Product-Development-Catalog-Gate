@@ -1,35 +1,49 @@
-function Hero() {
+export default function Hero({ onVendorLogin, onAdminLogin }) {
   return (
-    <section className="py-24 text-center relative overflow-hidden">
-      <div className="max-w-5xl mx-auto px-6">
-        <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-200 text-blue-500 text-xs font-semibold px-3 py-1 rounded-full mb-8 uppercase tracking-wide">
+    <section className="section hero">
+      <div className="container">
+        <div className="badge">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect width="20" height="11" x="2" y="9" rx="2" ry="2" />
+            <path d="M5 20V9a7 7 0 0 1 14 0v11" />
+          </svg>
           Trusted by Enterprise Marketplaces
         </div>
-
-        <h1 className="text-5xl font-bold leading-tight mb-6 text-gray-900">
+        <h1>
           The Operational Standard for <br />
-          <span className="bg-teal-100 px-2 rounded">
-            Catalog Validation
-          </span>
+          <span className="hero-highlight">Catalog Validation</span>.
         </h1>
-
-        <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-10">
-          Ensure zero-error data delivery. CatalogGate creates a clinical barrier
-          between vendor uploads and your production environment.
+        <p>
+          Ensure zero-error data delivery. CatalogGate creates a clinical
+          barrier between vendor uploads and your production environment,
+          automating quality control at scale.
         </p>
-
-        <div className="flex justify-center gap-4">
-          <button className="px-6 py-3 bg-gradient-to-r from-blue-400 to-teal-500 text-white rounded-md font-semibold hover:scale-105 transition">
-            I'm a Vendor
+        <div className="hero-actions">
+          <button
+            type="button"
+            className="btn-bichromatic btn-bichromatic-vendor"
+            onClick={onVendorLogin}
+          >
+            I&apos;m a Vendor
           </button>
-
-          <button className="px-6 py-3 bg-gradient-to-l from-blue-400 to-teal-500 text-white rounded-md font-semibold hover:scale-105 transition">
-            I'm a Catalog Admin
+          <button
+            type="button"
+            className="btn-bichromatic btn-bichromatic-admin"
+            onClick={onAdminLogin}
+          >
+            I&apos;m a Catalog Admin
           </button>
         </div>
       </div>
     </section>
   );
 }
-
-export default Hero;
