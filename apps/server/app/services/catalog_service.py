@@ -1,6 +1,6 @@
 from apps.server.app.schemas.current_user import CurrentUser
 from pathlib import Path
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from fastapi import UploadFile, HTTPException
 # from supabase import Client
@@ -69,5 +69,77 @@ def create_catalog_upload_record(
         })
         .execute()
     )
+
+    return result.data[0]
+
+
+def get_catalog_upload_by_id(
+    current_user: CurrentUser,
+    upload_id: UUID,
+):
+    result = (
+        current_user.supabase
+        .table("catalog_uploads")
+        .select("""
+            *,
+            reports!reports_catalog_upload_id_fkey(
+                *,
+                dataset_profiles!dataset_profiles_report_id_fkey(*)
+            )
+        """)
+        .eq("id", str(upload_id))
+        .execute()
+    )
+
+    if not result.data:
+        raise HTTPException(
+            status_code=404,
+            detail="Catalog upload record not found",
+        )
+
+    return result.data[0]
+
+
+def get_report_by_id(
+    current_user: CurrentUser,
+    report_id: UUID,
+):
+    result = (
+        current_user.supabase
+        .table("reports")
+        .select("""
+            *,
+            dataset_profiles!dataset_profiles_report_id_fkey(*)
+        """)
+        .eq("id", str(report_id))
+        .execute()
+    )
+
+    if not result.data:
+        raise HTTPException(
+            status_code=404,
+            detail="Report not found",
+        )
+
+    return result.data[0]
+
+
+def get_profile_by_id(
+    current_user: CurrentUser,
+    profile_id: UUID,
+):
+    result = (
+        current_user.supabase
+        .table("dataset_profiles")
+        .select("*")
+        .eq("id", str(profile_id))
+        .execute()
+    )
+
+    if not result.data:
+        raise HTTPException(
+            status_code=404,
+            detail="Dataset profile not found",
+        )
 
     return result.data[0]

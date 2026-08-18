@@ -1,4 +1,5 @@
 from fastapi import APIRouter, status
+
 from app.schemas.auth import (
     RegisterRequest,
     LoginRequest,

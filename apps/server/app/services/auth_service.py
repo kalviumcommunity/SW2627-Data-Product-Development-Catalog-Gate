@@ -1,4 +1,5 @@
 from fastapi import HTTPException
+
 from app.supabase_client import supabase, service_supabase
 
 def register_user(data):
