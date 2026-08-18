@@ -20,6 +20,9 @@ router = APIRouter(
 def get_uploads(
     current_user: CurrentUser = Depends(get_current_user),
 ):
+# need to put joins here - the join must be between catalog_uploads and report
+# see report -> fetch the report and the corresponding profile
+# show the report + profile as one report
     return (
         current_user.supabase
         .table("catalog_uploads")

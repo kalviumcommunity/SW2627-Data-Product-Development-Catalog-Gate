@@ -1,6 +1,5 @@
 from app.schemas.current_user import CurrentUser
 from fastapi import APIRouter, Depends, status
-from supabase import Client
 
 from app.auth.dependency import get_current_user
 from app.schemas.tenant import TenantCreate, TenantResponse
