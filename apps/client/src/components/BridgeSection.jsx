@@ -1,58 +1,111 @@
-function BridgeSection() {
+export default function BridgeSection() {
   return (
-    <section className="py-24 bg-gray-50">
-      <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
-        
-        {/* LEFT */}
-        <div>
-          <h2 className="text-3xl font-bold mb-6">
-            Bridging the Gap Between <br /> Vendors and Customers
-          </h2>
+    <section className="section section-light" id="features">
+      <div className="container">
+        <div className="bridge-grid">
+          <div className="bridge-left">
+            <h2>
+              Bridging the Gap Between <br />
+              Vendors and Customers
+            </h2>
+            <p>
+              Unstructured vendor data often leads to marketplace
+              inconsistencies, broken links, and poor customer trust. Manual
+              validation is a bottleneck that cannot scale.
+            </p>
 
-          <p className="text-gray-500 mb-10">
-            Unstructured vendor data leads to inconsistencies and poor trust.
-          </p>
+            <div className="feature-list">
+              <div className="feature-item">
+                <div className="feature-icon-wrapper">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+                <div className="feature-content">
+                  <h4>Data Integrity Crisis</h4>
+                  <p>
+                    Eliminate the 15% error rate typical in direct vendor
+                    uploads.
+                  </p>
+                </div>
+              </div>
 
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-500">
-                ✓
-              </div>
-              <div>
-                <h4 className="font-semibold">Data Integrity Crisis</h4>
-                <p className="text-sm text-gray-500">
-                  Eliminate the 15% error rate in uploads.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-500">
-                ⚡
-              </div>
-              <div>
-                <h4 className="font-semibold">Operational Velocity</h4>
-                <p className="text-sm text-gray-500">
-                  Reduce time-to-market drastically.
-                </p>
+              <div className="feature-item">
+                <div className="feature-icon-wrapper">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                </div>
+                <div className="feature-content">
+                  <h4>Operational Velocity</h4>
+                  <p>
+                    Reduce time-to-market from days to minutes with automated
+                    logic.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* RIGHT */}
-        <div className="grid grid-cols-2 gap-6">
-          <div className="p-6 bg-blue-50 rounded-xl">
-            <h3 className="font-bold text-lg">Sanitized Pipeline</h3>
-          </div>
+          <div className="bridge-right">
+            <div className="bridge-card light">
+              <svg
+                className="card-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                <path d="M9 11l2 2 4-4" />
+              </svg>
+              <h3>
+                Sanitized <br />
+                Pipeline
+              </h3>
+            </div>
 
-          <div className="p-6 bg-blue-500 text-white rounded-xl">
-            <h3 className="font-bold text-lg">Centralized Authority</h3>
+            <div className="bridge-card blue">
+              <svg
+                className="card-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1l2.1-2.1M17 7l2.1-2.1" />
+              </svg>
+              <h3>
+                Centralized <br />
+                Authority
+              </h3>
+            </div>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
-export default BridgeSection;
