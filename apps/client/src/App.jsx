@@ -10,6 +10,7 @@ import {
 } from "./pages/VendorWorkspace";
 import SuperAdminDashboard from "./components/admin/SuperAdminDashboard";
 import RecordFormView from "./components/admin/RecordFormView";
+import VendorRecordView from "./components/vendor/VendorRecordView";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="history" element={<VendorHistoryPage />} />
         <Route path="validation-rules" element={<VendorValidationRulesPage />} />
       </Route>
+      <Route path="/vendor/record" element={<VendorRecordView />} />
       <Route path="/admin" element={<SuperAdminDashboard />} />
       <Route path="/record" element={<RecordFormView />} />
     </Routes>

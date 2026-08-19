@@ -23,3 +23,13 @@
   background-position: right 0.65rem center;
   background-size: 0.75rem;
 }
+
+/* DataTable link styling */
+.data-table a {
+  color: #7aa0ff !important;
+  text-decoration: none !important;
+}
+
+.data-table a:hover {
+  text-decoration: underline !important;
+}

@@ -1,4 +1,5 @@
 import VendorDashboard from "../components/vendor/VendorDashboard";
+import VendorUpload from "../components/vendor/VendorUpload";
 import VendorPlaceholder from "../components/vendor/VendorPlaceholder";
 
 export function VendorDashboardPage() {
@@ -6,7 +7,7 @@ export function VendorDashboardPage() {
 }
 
 export function VendorUploadPage() {
-  return <VendorPlaceholder title="Upload Catalog" />;
+  return <VendorUpload />;
 }
 
 export function VendorHistoryPage() {

@@ -11,6 +11,8 @@ export default function DataTable({
   totalCount = 0,
   entityName = "records",
   currentTable = "users",
+  customRenderers = {},
+  linkTarget = "/record",
 }) {
   const getBadgeStyle = (value) => {
     const val = String(value).toUpperCase();
@@ -47,17 +49,37 @@ export default function DataTable({
   const renderCellContent = (row, col) => {
     const rawVal = row[col.key];
 
+    // Check for custom renderer first
+    if (customRenderers[col.key]) {
+      return customRenderers[col.key](rawVal, row);
+    }
+
     if (col.isLink || col.isId) {
-      const recordId = row.id || row.batch_id || rawVal;
+      const recordId = row.id || rawVal;
+      // For vendor uploads, show a shortened version of the ID
+      let displayId = rawVal;
+      if (col.key === "id" && typeof rawVal === "string" && rawVal.length > 8) {
+        displayId = `#${rawVal.slice(0, 8).toUpperCase()}`;
+      }
+      const targetLink = col.linkTarget || linkTarget;
+      // Build query params based on whether we need table parameter
+      const queryParams = currentTable && currentTable !== "uploads" 
+        ? `?table=${currentTable}&id=${encodeURIComponent(recordId)}`
+        : `?id=${encodeURIComponent(recordId)}`;
+      
       return (
         <Link
-          to={`/record?table=${currentTable}&id=${encodeURIComponent(recordId)}`}
+          to={`${targetLink}${queryParams}`}
           target="_blank"
           rel="noopener noreferrer"
           title="Open Record Form View in new tab"
-          className="font-semibold text-[#7aa0ff] hover:underline cursor-pointer"
+          className="font-semibold cursor-pointer"
+          style={{ 
+            color: '#7aa0ff',
+            textDecoration: 'none'
+          }}
         >
-          {rawVal}
+          {displayId}
         </Link>
       );
     }
@@ -90,8 +112,15 @@ export default function DataTable({
       if (rawVal === null || rawVal === undefined || rawVal === "") {
         return <span className="text-[#94a3b8]">—</span>;
       }
+      // Add color coding for passed/failed rules
+      let className = "font-medium text-[#1e293b]";
+      if (col.key === "passed_rules" && rawVal > 0) {
+        className = "font-medium text-[#10b981]";
+      } else if (col.key === "failed_rules" && rawVal > 0) {
+        className = "font-medium text-[#ef4444]";
+      }
       return (
-        <span className="font-medium text-[#1e293b]">
+        <span className={className}>
           {typeof rawVal === "number" ? rawVal.toLocaleString() : rawVal}
         </span>
       );
