@@ -24,6 +24,8 @@ export async function apiFetch(path, options = {}) {
     headers.Authorization = `Bearer ${accessToken}`;
   }
 
+  console.log("API Request:", path, "Method:", rest.method || "GET", "Body type:", body instanceof FormData ? "FormData" : typeof body);
+  
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...rest,
     headers,
@@ -33,9 +35,13 @@ export async function apiFetch(path, options = {}) {
         : body,
   });
 
+  console.log("API Response status:", response.status, "ok:", response.ok);
+
   const contentType = response.headers.get("content-type") || "";
   const isJson = contentType.includes("application/json");
   const payload = isJson ? await response.json() : null;
+
+  console.log("API Response payload:", payload);
 
   if (!response.ok) {
     const message =
@@ -43,6 +49,7 @@ export async function apiFetch(path, options = {}) {
       (Array.isArray(payload?.detail) && payload.detail[0]?.msg) ||
       response.statusText ||
       "Request failed";
+    console.error("API Error:", message, "Status:", response.status);
     throw new ApiError(response.status, message);
   }
 

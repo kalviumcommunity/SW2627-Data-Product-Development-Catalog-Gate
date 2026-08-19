@@ -1,8 +1,8 @@
 export default function VendorAppFooter() {
   return (
-    <footer className="app-footer">
-      <div className="app-footer-container">
-        <div className="app-footer-left">
+    <footer className="mt-auto py-3 px-8 text-xs text-[#64748b] border-t border-[#e2e8f0] bg-transparent">
+      <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
+        <div className="flex items-center gap-2 font-semibold text-[#1e293b]">
           <svg
             width="18"
             height="18"
@@ -20,13 +20,17 @@ export default function VendorAppFooter() {
           </svg>
           CatalogGate Enterprise
         </div>
-        <div className="app-footer-center">
-          &copy; 2026 CatalogGate Enterprise. All rights reserved.
-        </div>
-        <div className="app-footer-links">
-          <a href="#privacy">Privacy Policy</a>
-          <a href="#terms">Terms of Service</a>
-          <a href="#security">Security Compliance</a>
+        <div>&copy; 2026 CatalogGate Enterprise Operations. All systems operational.</div>
+        <div className="flex gap-4">
+          <a href="#privacy" className="hover:underline">
+            Privacy Policy
+          </a>
+          <a href="#terms" className="hover:underline">
+            Terms of Service
+          </a>
+          <a href="#security" className="hover:underline">
+            Security Compliance
+          </a>
         </div>
       </div>
     </footer>

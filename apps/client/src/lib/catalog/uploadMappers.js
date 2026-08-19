@@ -19,12 +19,23 @@ export function mapCatalogUploadToRow(upload) {
   const report = upload.reports?.[0];
   const profile = report?.dataset_profiles?.[0];
 
+  const totalRules = report?.total_rules ?? 0;
+  const failedRules = report?.total_failed_rules ?? 0;
+  const passedRules = totalRules > 0 ? totalRules - failedRules : 0;
+
   return {
     ...upload,
-    batch_id: `#${upload.id.slice(0, 8).toUpperCase()}`,
     filename: getFilename(upload.filepath),
-    items_count: profile?.row_count ?? null,
-    failed_rules: report?.total_failed_rules ?? 0,
+    // Dataset profile fields
+    row_count: profile?.row_count ?? null,
+    column_count: profile?.column_count ?? null,
+    duplicate_count: profile?.duplicate_count ?? 0,
+    duplicate_percentage: profile?.duplicate_percentage ?? 0,
+    // Report fields
+    total_rules: totalRules,
+    failed_rules: failedRules,
+    passed_rules: passedRules,
+    // Timestamps
     created_at: formatDateTime(upload.created_at),
     updated_at: formatDateTime(upload.updated_at),
   };
