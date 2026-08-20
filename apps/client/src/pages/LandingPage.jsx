@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../landing.css";
+// import "../landing.css";
 import Hero from "../components/Hero";
 import BridgeSection from "../components/BridgeSection";
 import Lifecycle from "../components/Lifecycle";
@@ -12,27 +12,16 @@ export default function LandingPage() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [loginRole, setLoginRole] = useState("vendor");
 
-  const openLogin = (role) => {
-    setLoginRole(role);
-    setLoginOpen(true);
-  };
 
   return (
     <div className="landing-page">
-      <Hero
-        onVendorLogin={() => openLogin("vendor")}
-        onAdminLogin={() => openLogin("client")}
-      />
+      <Hero loginHandler={() => setLoginOpen(true)} />
       <BridgeSection />
       <Lifecycle />
       <Capabilities />
       <CtaBanner />
       <Footer />
-      <LoginModal
-        isOpen={loginOpen}
-        initialRole={loginRole}
-        onClose={() => setLoginOpen(false)}
-      />
+      <LoginModal isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
     </div>
   );
 }
