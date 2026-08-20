@@ -4,23 +4,10 @@ import { ApiError } from "../lib/api/client";
 import { getRedirectForRole } from "../lib/auth/jwt";
 import { useAuth } from "../context/AuthContext";
 
-const ROLE_CONFIG = {
-  vendor: {
-    subtitle: "Access your vendor listing workspace",
-    emailPlaceholder: "vendor@company.com",
-    expectedRole: "vendor",
-  },
-  client: {
-    subtitle: "Access your catalog admin console",
-    emailPlaceholder: "admin@cataloggate.com",
-    expectedRole: "catalog_admin",
-  },
-};
-
-export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) {
+export default function LoginModal({ isOpen, onClose }) {
   const navigate = useNavigate();
-  const { login, logout } = useAuth();
-  const [activeRole, setActiveRole] = useState(initialRole);
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,10 +15,9 @@ export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) 
 
   useEffect(() => {
     if (isOpen) {
-      setActiveRole(initialRole);
       setError("");
     }
-  }, [isOpen, initialRole]);
+  }, [isOpen]);
 
   const handleOverlayClick = (event) => {
     if (event.target === event.currentTarget) {
@@ -46,18 +32,10 @@ export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) 
 
     try {
       const session = await login(email, password);
-      const config = ROLE_CONFIG[activeRole];
-
-      if (config.expectedRole && session.role !== config.expectedRole) {
-        logout();
-        throw new Error(`This account is not authorized as a ${activeRole === "vendor" ? "vendor" : "catalog admin"}.`);
-      }
-
-      const redirect = getRedirectForRole(session.role);
-      if (redirect && redirect !== "/") {
+      const redirect = getRedirectForRole(session);
+      if (redirect !== "/") {
         navigate(redirect);
       }
-
       onClose();
     } catch (err) {
       const message =
@@ -66,13 +44,12 @@ export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) 
           : err instanceof Error
             ? err.message
             : "Unable to sign in. Please try again.";
+
       setError(message);
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const config = ROLE_CONFIG[activeRole];
 
   return (
     <div
@@ -83,7 +60,12 @@ export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) 
       aria-hidden={!isOpen}
     >
       <div className="modal-container">
-        <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
+        <button
+          type="button"
+          className="modal-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
           <svg
             width="20"
             height="20"
@@ -101,24 +83,7 @@ export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) 
 
         <div className="modal-header">
           <h3>CatalogGate Portal</h3>
-          <p>{config.subtitle}</p>
-        </div>
-
-        <div className="modal-tabs">
-          <button
-            type="button"
-            className={`modal-tab${activeRole === "vendor" ? " active" : ""}`}
-            onClick={() => setActiveRole("vendor")}
-          >
-            Vendor
-          </button>
-          <button
-            type="button"
-            className={`modal-tab${activeRole === "client" ? " active" : ""}`}
-            onClick={() => setActiveRole("client")}
-          >
-            Catalog Admin
-          </button>
+          <p>Sign in to access your workspace</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -128,13 +93,14 @@ export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) 
               type="email"
               id="email-input"
               className="form-control"
-              placeholder={config.emailPlaceholder}
+              placeholder="you@company.com"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               required
               autoComplete="email"
             />
           </div>
+
           <div className="form-group">
             <label htmlFor="password-input">Password</label>
             <input
@@ -155,12 +121,18 @@ export default function LoginModal({ isOpen, initialRole = "vendor", onClose }) 
             </p>
           ) : null}
 
-          <button type="submit" className="modal-btn-submit" disabled={isSubmitting}>
+          <button
+            type="submit"
+            className="modal-btn-submit"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
-        <div className="modal-footer">Secured by CatalogGate Enterprise Auth.</div>
+        <div className="modal-footer">
+          Secured by CatalogGate Enterprise Auth.
+        </div>
       </div>
     </div>
   );

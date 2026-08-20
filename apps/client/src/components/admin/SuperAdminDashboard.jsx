@@ -11,9 +11,18 @@ import {
   TENANTS_DATA,
 } from "../../data/adminMockData";
 
+const TABLE_API_NAMES = {
+  uploads: "catalog_uploads",
+  users: "users",
+  tenants: "tenants",
+};
+
 export default function SuperAdminDashboard() {
   const { user } = useAuth();
+
+  // Keep this as "uploads" because TABLE_SCHEMAS uses that key.
   const [selectedTable, setSelectedTable] = useState("uploads");
+
   const [uploadsData, setUploadsData] = useState([]);
   const [uploadsLoading, setUploadsLoading] = useState(true);
   const [uploadsError, setUploadsError] = useState("");
@@ -26,8 +35,14 @@ export default function SuperAdminDashboard() {
 
   const currentSchema = TABLE_SCHEMAS[selectedTable];
 
+  // This is the actual backend/database table name.
+  const recordTable =
+    TABLE_API_NAMES[selectedTable] || selectedTable;
+
   useEffect(() => {
-    if (selectedTable !== "uploads") return;
+    if (selectedTable !== "uploads") {
+      return;
+    }
 
     let isMounted = true;
 
@@ -37,14 +52,22 @@ export default function SuperAdminDashboard() {
 
       try {
         const response = await getCatalogUploads();
-        if (!isMounted) return;
+
+        if (!isMounted) {
+          return;
+        }
+
         setUploadsData(mapCatalogUploads(response));
       } catch (error) {
-        if (!isMounted) return;
+        if (!isMounted) {
+          return;
+        }
+
         const message =
           error instanceof ApiError
             ? error.message
             : "Failed to load catalog uploads.";
+
         setUploadsError(message);
         setUploadsData([]);
       } finally {
@@ -63,50 +86,76 @@ export default function SuperAdminDashboard() {
 
   const rawDataset = useMemo(() => {
     switch (selectedTable) {
-      case "users":
-        return USERS_DATA;
-      case "tenants":
-        return TENANTS_DATA;
       case "uploads":
         return uploadsData;
-      default:
+
+      case "users":
         return USERS_DATA;
+
+      case "tenants":
+        return TENANTS_DATA;
+
+      default:
+        return [];
     }
   }, [selectedTable, uploadsData]);
 
   const handleTableChange = (e) => {
     const newTable = e.target.value;
+
     setSelectedTable(newTable);
+
     setConditions([]);
     setAppliedConditions([]);
+
+    setMatchMode("and");
+    setAppliedMatchMode("and");
   };
 
   const handleAddCondition = () => {
-    const defaultField = currentSchema.fields[0];
+    const defaultField = currentSchema?.fields?.[0];
+
+    if (!defaultField) {
+      return;
+    }
+
     const newRow = {
-      id: Math.random().toString(36).substring(2, 9),
+      id: crypto.randomUUID(),
       field: defaultField.value,
       operator: "contains",
       value: "",
     };
+
     setConditions((prev) => [...prev, newRow]);
   };
 
   const handleRemoveCondition = (id) => {
-    setConditions((prev) => prev.filter((row) => row.id !== id));
+    setConditions((prev) =>
+      prev.filter((row) => row.id !== id)
+    );
   };
 
   const handleChangeCondition = (id, key, val) => {
     setConditions((prev) =>
       prev.map((row) => {
-        if (row.id !== id) return row;
-        const updated = { ...row, [key]: val };
+        if (row.id !== id) {
+          return row;
+        }
+
+        const updated = {
+          ...row,
+          [key]: val,
+        };
 
         if (key === "field") {
-          const fieldDef = currentSchema.fields.find((f) => f.value === val);
+          const fieldDef = currentSchema.fields.find(
+            (field) => field.value === val
+          );
+
           if (fieldDef?.type === "select") {
             updated.operator = "is";
-            updated.value = fieldDef.options?.[0]?.value || "";
+            updated.value =
+              fieldDef.options?.[0]?.value || "";
           } else if (fieldDef?.type === "number") {
             updated.operator = "is";
             updated.value = "";
@@ -115,6 +164,7 @@ export default function SuperAdminDashboard() {
             updated.value = "";
           }
         }
+
         return updated;
       })
     );
@@ -123,6 +173,9 @@ export default function SuperAdminDashboard() {
   const handleClearAll = () => {
     setConditions([]);
     setAppliedConditions([]);
+
+    setMatchMode("and");
+    setAppliedMatchMode("and");
   };
 
   const handleRunFilter = () => {
@@ -131,46 +184,155 @@ export default function SuperAdminDashboard() {
   };
 
   const filteredData = useMemo(() => {
-    if (appliedConditions.length === 0) return rawDataset;
+    if (appliedConditions.length === 0) {
+      return rawDataset;
+    }
 
     return rawDataset.filter((item) => {
-      const evaluateRowCondition = (cond) => {
-        const itemVal = item[cond.field];
-        if (itemVal === undefined || itemVal === null) return false;
+      const evaluateRowCondition = (condition) => {
+        const itemValue = item[condition.field];
 
-        const fieldDef = currentSchema.fields.find((f) => f.value === cond.field);
-        const fieldType = fieldDef?.type || "text";
+        if (
+          itemValue === undefined ||
+          itemValue === null
+        ) {
+          return false;
+        }
+
+        const fieldDef = currentSchema.fields.find(
+          (field) =>
+            field.value === condition.field
+        );
+
+        const fieldType =
+          fieldDef?.type || "text";
 
         if (fieldType === "number") {
-          const numVal = parseFloat(cond.value);
-          const itemNum = parseFloat(itemVal);
-          if (isNaN(numVal) || isNaN(itemNum)) return true;
-          if (cond.operator === "gt") return itemNum > numVal;
-          if (cond.operator === "lt") return itemNum < numVal;
-          if (cond.operator === "is") return itemNum === numVal;
+          const filterNumber =
+            parseFloat(condition.value);
+
+          const itemNumber =
+            parseFloat(itemValue);
+
+          if (
+            Number.isNaN(filterNumber) ||
+            Number.isNaN(itemNumber)
+          ) {
+            return true;
+          }
+
+          if (condition.operator === "gt") {
+            return itemNumber > filterNumber;
+          }
+
+          if (condition.operator === "lt") {
+            return itemNumber < filterNumber;
+          }
+
+          if (condition.operator === "is") {
+            return itemNumber === filterNumber;
+          }
+
           return true;
         }
 
-        const strCondVal = String(cond.value).trim().toLowerCase();
-        const strItemVal = String(itemVal).trim().toLowerCase();
+        const filterValue = String(
+          condition.value
+        )
+          .trim()
+          .toLowerCase();
 
-        if (!strCondVal) return true;
+        const normalizedItemValue = String(
+          itemValue
+        )
+          .trim()
+          .toLowerCase();
 
-        if (cond.operator === "is") return strItemVal === strCondVal;
-        if (cond.operator === "is_not") return strItemVal !== strCondVal;
-        if (cond.operator === "contains") return strItemVal.includes(strCondVal);
-        if (cond.operator === "starts_with") return strItemVal.startsWith(strCondVal);
+        if (!filterValue) {
+          return true;
+        }
+
+        if (condition.operator === "is") {
+          return (
+            normalizedItemValue === filterValue
+          );
+        }
+
+        if (condition.operator === "is_not") {
+          return (
+            normalizedItemValue !== filterValue
+          );
+        }
+
+        if (condition.operator === "contains") {
+          return normalizedItemValue.includes(
+            filterValue
+          );
+        }
+
+        if (
+          condition.operator === "starts_with"
+        ) {
+          return normalizedItemValue.startsWith(
+            filterValue
+          );
+        }
 
         return true;
       };
 
       if (appliedMatchMode === "and") {
-        return appliedConditions.every(evaluateRowCondition);
-      } else {
-        return appliedConditions.some(evaluateRowCondition);
+        return appliedConditions.every(
+          evaluateRowCondition
+        );
       }
+
+      return appliedConditions.some(
+        evaluateRowCondition
+      );
     });
-  }, [rawDataset, appliedConditions, appliedMatchMode, currentSchema]);
+  }, [
+    rawDataset,
+    appliedConditions,
+    appliedMatchMode,
+    currentSchema,
+  ]);
+
+  /*
+   * Add record links to the ID column.
+   *
+   * selectedTable:
+   *   uploads
+   *
+   * recordTable:
+   *   catalog_uploads
+   *
+   * Result:
+   * /workspace/record/catalog_uploads?id=<id>
+   */
+  const tableColumns = useMemo(() => {
+  if (!currentSchema?.columns) {
+    return [];
+  }
+
+  return currentSchema.columns.map((column) => {
+    if (column.key !== "id") {
+      return column;
+    }
+
+    return {
+      ...column,
+      isLink: true,
+      isId: true,
+
+      // DataTable should append ?id=<record-id>
+      // to this base URL.
+      linkTarget: `/record?table=${encodeURIComponent(
+        recordTable
+      )}`,
+    };
+  });
+}, [currentSchema, recordTable]);
 
   const displayName =
     user?.user_metadata?.name ||
@@ -186,8 +348,12 @@ export default function SuperAdminDashboard() {
             <span className="text-[0.95rem] font-semibold text-[#7aa0ff] block mb-0.5">
               Welcome {displayName}!
             </span>
+
             <h1 className="text-[2rem] font-normal text-[#1e293b] tracking-tight leading-tight">
-              Super Admin <strong className="font-bold">Dashboard</strong>
+              Super Admin{" "}
+              <strong className="font-bold">
+                Dashboard
+              </strong>
             </h1>
           </div>
 
@@ -197,18 +363,30 @@ export default function SuperAdminDashboard() {
               onChange={handleTableChange}
               className="w-44 min-w-[160px] px-4 py-1.5 pr-8 text-xs font-bold text-[#7aa0ff] bg-white border border-[#e2e8f0] rounded-[6px] outline-none cursor-pointer uppercase tracking-wider mock-select"
             >
-              <option value="uploads">Uploads</option>
-              <option value="users">Users</option>
-              <option value="tenants">Tenants</option>
+              <option value="uploads">
+                Uploads
+              </option>
+
+              <option value="users">
+                Users
+              </option>
+
+              <option value="tenants">
+                Tenants
+              </option>
             </select>
 
             <div className="flex items-center gap-2.5">
               <div className="text-right leading-tight">
-                <div className="text-[0.775rem] font-bold text-[#1e293b]">{displayName}</div>
+                <div className="text-[0.775rem] font-bold text-[#1e293b]">
+                  {displayName}
+                </div>
+
                 <div className="text-[0.65rem] font-semibold text-[#64748b] uppercase tracking-wider">
                   Super Admin
                 </div>
               </div>
+
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=150&auto=format&fit=crop"
                 alt="Admin Profile"
@@ -219,7 +397,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         <FilterBuilder
-          fields={currentSchema.fields}
+          fields={currentSchema?.fields || []}
           conditions={conditions}
           matchMode={matchMode}
           onMatchModeChange={setMatchMode}
@@ -230,23 +408,28 @@ export default function SuperAdminDashboard() {
           onRunFilter={handleRunFilter}
         />
 
-        {selectedTable === "uploads" && uploadsError ? (
+        {selectedTable === "uploads" &&
+        uploadsError ? (
           <div className="rounded-[10px] border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {uploadsError}
           </div>
         ) : null}
 
-        {selectedTable === "uploads" && uploadsLoading ? (
+        {selectedTable === "uploads" &&
+        uploadsLoading ? (
           <section className="bg-white border border-[#e2e8f0] rounded-[14px] p-10 shadow-[0_1px_3px_rgba(0,0,0,0.02)] text-center text-sm text-[#64748b]">
             Loading catalog uploads...
           </section>
         ) : (
           <DataTable
-            columns={currentSchema.columns}
+            columns={tableColumns}
             data={filteredData}
             totalCount={rawDataset.length}
-            entityName={currentSchema.label.toLowerCase()}
-            currentTable={selectedTable}
+            entityName={
+              currentSchema?.label?.toLowerCase() ||
+              "records"
+            }
+            currentTable={recordTable}
           />
         )}
       </main>
@@ -264,21 +447,35 @@ export default function SuperAdminDashboard() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <rect
+                width="18"
+                height="18"
+                x="3"
+                y="3"
+                rx="2"
+              />
               <path d="M9 17V7" />
               <path d="M15 17V7" />
               <path d="M9 12h6" />
             </svg>
+
             CatalogGate Enterprise
           </div>
-          <div>&copy; 2026 CatalogGate Enterprise Operations. All systems operational.</div>
+
+          <div>
+            &copy; 2026 CatalogGate Enterprise Operations.
+            All systems operational.
+          </div>
+
           <div className="flex gap-4">
             <a href="#" className="hover:underline">
               Privacy Policy
             </a>
+
             <a href="#" className="hover:underline">
               Terms of Service
             </a>
+
             <a href="#" className="hover:underline">
               Security Compliance
             </a>

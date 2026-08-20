@@ -238,8 +238,8 @@ export const TABLE_SCHEMAS = {
     columns: [
       { key: "id", label: "Upload ID", isLink: true },
       { key: "filename", label: "File Name", isPrimary: true },
-      { key: "tenant_id", label: "Tenant ID", isCode: true },
-      { key: "user_id", label: "User ID", isCode: true },
+      { key: "tenant_id", label: "Tenant ID", isId: true },
+      { key: "user_id", label: "User ID", isId: true },
       { key: "items_count", label: "Rows", isNumber: true },
       { key: "failed_rules", label: "Failed Rules", isNumber: true },
       { key: "status", label: "Status", isBadge: true },

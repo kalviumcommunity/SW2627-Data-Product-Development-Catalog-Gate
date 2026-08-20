@@ -30,3 +30,18 @@ def get_all_tenants(
     )
 
     return response.data
+
+
+def get_tenant_by_id(supabase: Client, tenant_id: str):
+    response = (
+        supabase
+        .table("tenants")
+        .select("*")
+        .eq("id", tenant_id)
+        .execute()
+    )
+
+    if not response.data:
+        return None
+
+    return response.data[0]

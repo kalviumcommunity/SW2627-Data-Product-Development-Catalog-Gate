@@ -1,10 +1,6 @@
 import React from "react";
-import { OPERATOR_CONFIG } from "../../data/adminMockData";
+import { OPERATOR_CONFIG } from "../../data/filterConfig";
 
-/**
- * FilterBuilder Component
- * ServiceNow-style dynamic query builder translated to React Tailwind from docs/mock.
- */
 export default function FilterBuilder({
   fields = [],
   conditions = [],
@@ -23,12 +19,14 @@ export default function FilterBuilder({
         <span className="text-[0.75rem] font-bold text-[#64748b] uppercase tracking-wider">
           Filter Conditions
         </span>
+
         <div className="flex items-center gap-2 text-xs text-[#64748b] font-medium">
           <span>Match:</span>
+
           <select
             value={matchMode}
             onChange={(e) => onMatchModeChange?.(e.target.value)}
-            className="px-3 py-1 pr-7 text-xs font-semibold border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer mock-select"
+            className="px-3 py-1 pr-7 text-xs font-semibold border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer"
           >
             <option value="and">All (AND)</option>
             <option value="or">Any (OR)</option>
@@ -36,58 +34,92 @@ export default function FilterBuilder({
         </div>
       </div>
 
-      {/* Filter Rows */}
+      {/* Conditions */}
       <div className="flex flex-col gap-3">
         {conditions.length === 0 ? (
           <div className="text-xs text-[#94a3b8] italic py-1">
-            No filter conditions applied. Click "+ Add Condition" below to filter rows.
+            No filter conditions applied. Click "+ Add Condition" below to
+            filter rows.
           </div>
         ) : (
-          conditions.map((row) => {
-            const fieldDef = fields.find((f) => f.value === row.field) || fields[0];
+          conditions.map((condition) => {
+            const fieldDef =
+              fields.find((field) => field.value === condition.field) ||
+              fields[0];
+
             const fieldType = fieldDef?.type || "text";
-            const operators = OPERATOR_CONFIG[fieldType] || OPERATOR_CONFIG.text;
+
+            const operators =
+              OPERATOR_CONFIG[fieldType] || OPERATOR_CONFIG.text;
 
             return (
-              <div key={row.id} className="flex flex-wrap items-center gap-3 w-full">
-                {/* Field Select */}
+              <div
+                key={condition.id}
+                className="flex flex-wrap items-center gap-3 w-full"
+              >
+                {/* Field */}
                 <select
-                  value={row.field}
-                  onChange={(e) => onChangeCondition(row.id, "field", e.target.value)}
-                  className="w-[140px] px-3 py-2 pr-7 text-[0.825rem] font-medium border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer mock-select"
+                  value={condition.field}
+                  onChange={(e) =>
+                    onChangeCondition(
+                      condition.id,
+                      "field",
+                      e.target.value
+                    )
+                  }
+                  className="w-[140px] px-3 py-2 pr-7 text-[0.825rem] font-medium border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer"
                 >
-                  {fields.map((f) => (
-                    <option key={f.value} value={f.value}>
-                      {f.label}
+                  {fields.map((field) => (
+                    <option key={field.value} value={field.value}>
+                      {field.label}
                     </option>
                   ))}
                 </select>
 
-                {/* Operator Select */}
+                {/* Operator */}
                 <select
-                  value={row.operator}
-                  onChange={(e) => onChangeCondition(row.id, "operator", e.target.value)}
-                  className="w-[150px] px-3 py-2 pr-7 text-[0.825rem] font-medium border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer mock-select"
+                  value={condition.operator}
+                  onChange={(e) =>
+                    onChangeCondition(
+                      condition.id,
+                      "operator",
+                      e.target.value
+                    )
+                  }
+                  className="w-[150px] px-3 py-2 pr-7 text-[0.825rem] font-medium border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer"
                 >
-                  {operators.map((op) => (
-                    <option key={op.value} value={op.value}>
-                      {op.label}
+                  {operators.map((operator) => (
+                    <option
+                      key={operator.value}
+                      value={operator.value}
+                    >
+                      {operator.label}
                     </option>
                   ))}
                 </select>
 
-                {/* Value Input / Select */}
+                {/* Value */}
                 <div className="flex-1 min-w-[200px] max-w-[280px]">
                   {fieldType === "select" ? (
                     <select
-                      value={row.value}
-                      onChange={(e) => onChangeCondition(row.id, "value", e.target.value)}
-                      className="w-full px-3 py-2 pr-7 text-[0.825rem] border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer mock-select"
+                      value={condition.value}
+                      onChange={(e) =>
+                        onChangeCondition(
+                          condition.id,
+                          "value",
+                          e.target.value
+                        )
+                      }
+                      className="w-full px-3 py-2 pr-7 text-[0.825rem] border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20 cursor-pointer"
                     >
                       <option value="">-- Select Value --</option>
-                      {fieldDef?.options?.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
+
+                      {fieldDef?.options?.map((option) => (
+                        <option
+                          key={option.value}
+                          value={option.value}
+                        >
+                          {option.label}
                         </option>
                       ))}
                     </select>
@@ -95,25 +127,37 @@ export default function FilterBuilder({
                     <input
                       type="number"
                       placeholder="Value..."
-                      value={row.value}
-                      onChange={(e) => onChangeCondition(row.id, "value", e.target.value)}
+                      value={condition.value}
+                      onChange={(e) =>
+                        onChangeCondition(
+                          condition.id,
+                          "value",
+                          e.target.value
+                        )
+                      }
                       className="w-full px-3 py-2 text-[0.825rem] border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20"
                     />
                   ) : (
                     <input
                       type="text"
                       placeholder="e.g. Summer..."
-                      value={row.value}
-                      onChange={(e) => onChangeCondition(row.id, "value", e.target.value)}
+                      value={condition.value}
+                      onChange={(e) =>
+                        onChangeCondition(
+                          condition.id,
+                          "value",
+                          e.target.value
+                        )
+                      }
                       className="w-full px-3 py-2 text-[0.825rem] border border-[#e2e8f0] rounded-[6px] bg-white text-[#1e293b] outline-none focus:border-[#7aa0ff] focus:ring-2 focus:ring-[#7aa0ff]/20"
                     />
                   )}
                 </div>
 
-                {/* Remove Button */}
+                {/* Remove */}
                 <button
                   type="button"
-                  onClick={() => onRemoveCondition(row.id)}
+                  onClick={() => onRemoveCondition(condition.id)}
                   title="Remove condition"
                   className="w-7 h-7 flex items-center justify-center text-[#ef4444] hover:bg-[#fef2f2] rounded-[6px] transition-colors cursor-pointer"
                 >
@@ -137,7 +181,7 @@ export default function FilterBuilder({
         )}
       </div>
 
-      {/* Actions Footer */}
+      {/* Actions */}
       <div className="flex justify-between items-center pt-3 border-t border-[#f1f5f9] mt-1">
         <div className="flex items-center gap-4">
           <button
@@ -158,8 +202,10 @@ export default function FilterBuilder({
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
+
             Add Condition
           </button>
+
           {conditions.length > 0 && (
             <button
               type="button"

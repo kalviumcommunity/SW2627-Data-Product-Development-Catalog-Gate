@@ -17,6 +17,7 @@ from app.routes import (
     user_routes,
     tenant_routes,
     catalog_routes,
+    validation_rules_routes,
 )
 
 app = FastAPI(
@@ -50,6 +51,10 @@ app.include_router(
 )
 app.include_router(
     catalog_routes.router,
+    prefix="/api/v1"
+)
+app.include_router(
+    validation_rules_routes.router,
     prefix="/api/v1"
 )
 

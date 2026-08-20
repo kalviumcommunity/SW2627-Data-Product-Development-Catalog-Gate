@@ -58,22 +58,23 @@ export default function DataTable({
       const recordId = row.id || rawVal;
       // For vendor uploads, show a shortened version of the ID
       let displayId = rawVal;
-      if (col.key === "id" && typeof rawVal === "string" && rawVal.length > 8) {
+      if (typeof rawVal === "string" && rawVal.length > 8) {
         displayId = `#${rawVal.slice(0, 8).toUpperCase()}`;
       }
       const targetLink = col.linkTarget || linkTarget;
-      // Build query params based on whether we need table parameter
-      const queryParams = currentTable && currentTable !== "uploads" 
-        ? `?table=${currentTable}&id=${encodeURIComponent(recordId)}`
-        : `?id=${encodeURIComponent(recordId)}`;
+      // Build query params - if targetLink already has table parameter, only append ID
+      const hasTableParam = targetLink.includes('table=');
+      const queryParams = hasTableParam
+        ? `&id=${encodeURIComponent(recordId)}`
+        : (currentTable 
+          ? `?table=${encodeURIComponent(currentTable)}&id=${encodeURIComponent(recordId)}`
+          : `?id=${encodeURIComponent(recordId)}`);
       
       return (
         <Link
           to={`${targetLink}${queryParams}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="Open Record Form View in new tab"
-          className="font-semibold cursor-pointer"
+          title="Open Record View"
+          className="font-semibold cursor-pointer hover:underline"
           style={{ 
             color: '#7aa0ff',
             textDecoration: 'none'
@@ -164,7 +165,6 @@ export default function DataTable({
               data.map((row, idx) => (
                 <tr
                   key={row.id || row.batch_id || idx}
-                  className="hover:bg-[#f8fafc] transition-colors"
                 >
                   {columns.map((col) => (
                     <td key={col.key} className="px-5 py-2.5 text-[0.85rem] whitespace-nowrap">
