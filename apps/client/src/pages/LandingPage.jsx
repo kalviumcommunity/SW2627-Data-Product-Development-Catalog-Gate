@@ -7,6 +7,7 @@ import Capabilities from "../components/Capabilities";
 import CtaBanner from "../components/CtaBanner";
 import Footer from "../components/Footer";
 import LoginModal from "../components/LoginModal";
+import "../landing.css";
 
 export default function LandingPage() {
   const [loginOpen, setLoginOpen] = useState(false);
