@@ -1,5 +1,7 @@
 # CatalogGate 
 
+![alt text](image.png)
+
 CatalogGate is a data quality validation engine for marketplace catalogs. It validates vendor product submissions before they are published, detects data quality issues, and generates actionable validation reports so incorrect catalog data never reaches customers.
 
 ---
