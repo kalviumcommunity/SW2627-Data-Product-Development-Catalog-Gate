@@ -44,6 +44,11 @@ const UPLOADS_COLUMNS = [
     isNumber: true,
   },
   {
+    key: "warning_count",
+    label: "Warnings",
+    isNumber: true,
+  },
+  {
     key: "duplicate_info",
     label: "Duplicates",
   },
@@ -58,6 +63,14 @@ const CUSTOM_RENDERERS = {
   duplicate_info: (value) => (
     <span className="text-[#1e293b]">{value}</span>
   ),
+  warning_count: (value) => {
+    if (value === 0 || value === undefined || value === null) {
+      return <span className="text-[#94a3b8]">—</span>;
+    }
+    return (
+      <span className="text-[#f59e0b] font-medium">{value}</span>
+    );
+  },
 };
 
 export default function Dashboard() {
