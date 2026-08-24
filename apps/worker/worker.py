@@ -2,6 +2,7 @@ import asyncio
 import logging
 import sys
 from pathlib import Path
+from typing import Tuple, List
 
 WORKER_DIR = Path(__file__).resolve().parent
 ROOT_DIR = WORKER_DIR.parent.parent
@@ -90,7 +91,7 @@ def process_upload(
     profiling_service: ProfilingService,
     report_service: ReportService,
     outlier_detection_service: OutlierDetectionService,
-) -> Report:
+) -> Tuple[Report, List[RuleResultMetadata]]:
 
     filepath = upload_job.filepath
     extension = get_file_extension(filepath)
@@ -169,6 +170,20 @@ def process_upload(
         if not result.result.passed
     ]
 
+    # Check for BLOCK severity failures
+    block_failures = [
+        result
+        for result in failed
+        if result.rule.severity == Severity.BLOCK
+    ]
+
+    # Check for non-BLOCK failures (warnings)
+    warning_failures = [
+        result
+        for result in failed
+        if result.rule.severity != Severity.BLOCK
+    ]
+
     if failed:
         logger.warning(
             "Validation completed. Found %d failed rules "
@@ -211,7 +226,7 @@ def process_upload(
         upload_job.id,
     )
 
-    return report
+    return report, results
 
 
 async def main():
@@ -243,7 +258,14 @@ async def main():
                 upload_job.id,
             )
 
-            report: Report = process_upload(
+            # Add deliberate 30-second delay
+            logger.info(
+                "Waiting 30 seconds before processing upload %s...",
+                upload_job.id,
+            )
+            await asyncio.sleep(30)
+
+            report, results = process_upload(
                 upload_job=upload_job,
                 ingestion_service=ingestion_service,
                 validation_engine=validation_engine,
@@ -279,19 +301,56 @@ async def main():
                     .execute()
                 )
 
+            # Determine final status based on validation results
+            failed_results = [
+                result for result in results 
+                if not result.result.passed
+            ]
+            
+            block_failures = [
+                result for result in failed_results
+                if result.rule.severity == Severity.BLOCK
+            ]
+            
+            warning_failures = [
+                result for result in failed_results
+                if result.rule.severity != Severity.BLOCK
+            ]
+            
+            # Set status based on validation results
+            if block_failures:
+                final_status = "FAILED"
+                logger.info(
+                    "Upload %s has BLOCK severity failures. Marking as FAILED.",
+                    upload_job.id,
+                )
+            elif warning_failures:
+                final_status = "APPROVAL_NEEDED"
+                logger.info(
+                    "Upload %s has non-BLOCK failures (warnings). Marking as APPROVAL_NEEDED.",
+                    upload_job.id,
+                )
+            else:
+                final_status = "COMPLETED"
+                logger.info(
+                    "Upload %s passed all validations. Marking as COMPLETED.",
+                    upload_job.id,
+                )
+
             (
                 service_supabase
                 .table("catalog_uploads")
                 .update({
-                    "status": "COMPLETED",
+                    "status": final_status,
                 })
                 .eq("id", str(upload_job.id))
                 .execute()
             )
 
             logger.info(
-                "Upload %s marked as COMPLETED.",
+                "Upload %s marked as %s.",
                 upload_job.id,
+                final_status,
             )
 
         except Exception as e:

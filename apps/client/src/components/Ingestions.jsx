@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { getCatalogUploads } from "../lib/api/catalogApi";
 import { ApiError } from "../lib/api/client";
 import { mapCatalogUploads } from "../lib/catalog/uploadMappers";
@@ -17,6 +18,10 @@ const UPLOADS_COLUMNS = [
     key: "filename",
     label: "File Name",
     isPrimary: true,
+  },
+  {
+    key: "vendor_name",
+    label: "Vendor",
   },
   {
     key: "created_at",
@@ -55,6 +60,22 @@ const UPLOADS_COLUMNS = [
 ];
 
 const CUSTOM_RENDERERS = {
+  vendor_name: (value, row) => {
+    if (!value || !row.vendor_id) {
+      return <span className="text-[#94a3b8]">—</span>;
+    }
+    return (
+      <Link
+        to={`/record?table=users&id=${encodeURIComponent(row.vendor_id)}`}
+        title="View vendor profile"
+        className="font-medium hover:underline"
+        style={{ color: "#7aa0ff", textDecoration: "none" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {value}
+      </Link>
+    );
+  },
   duplicate_info: (value) => (
     <span className="text-[#1e293b]">{value}</span>
   ),
@@ -67,21 +88,38 @@ const INGESTION_FILTER_FIELDS = [
     type: "text",
   },
   {
+    value: "vendor_name",
+    label: "Vendor Name",
+    type: "text",
+  },
+  {
     value: "status",
     label: "Status",
     type: "select",
     options: [
       {
-        value: "PASSED",
-        label: "Passed",
+        value: "APPROVAL_NEEDED",
+        label: "Approval Needed",
+      },
+      {
+        value: "PENDING",
+        label: "Pending",
+      },
+      {
+        value: "PROCESSING",
+        label: "Processing",
+      },
+      {
+        value: "COMPLETED",
+        label: "Completed",
       },
       {
         value: "FAILED",
         label: "Failed",
       },
       {
-        value: "PROCESSING",
-        label: "Processing",
+        value: "REJECTED",
+        label: "Rejected",
       },
     ],
   },
@@ -108,11 +146,11 @@ const INGESTION_FILTER_FIELDS = [
 ];
 
 export default function Ingestions() {
-  // Complete dataset returned by the API.
-  // This is never mutated by filtering.
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
   const [allUploadsData, setAllUploadsData] = useState([]);
 
-  // Dataset currently displayed in the table.
   const [uploadsData, setUploadsData] = useState([]);
 
   const [uploadsLoading, setUploadsLoading] = useState(true);
@@ -120,13 +158,14 @@ export default function Ingestions() {
 
   const [conditions, setConditions] = useState([]);
   const [matchMode, setMatchMode] = useState("and");
+  const [initialFilterApplied, setInitialFilterApplied] = useState(false);
 
   const loadUploads = async () => {
     setUploadsLoading(true);
     setUploadsError("");
 
     try {
-      const response = await getCatalogUploads();
+      const response = await getCatalogUploads({ vendor: true });
 
       const mappedData = mapCatalogUploads(response);
 
@@ -161,6 +200,30 @@ export default function Ingestions() {
   useEffect(() => {
     loadUploads();
   }, []);
+
+  useEffect(() => {
+    if (allUploadsData.length > 0 && !initialFilterApplied) {
+      const statusFilter = searchParams.get('status');
+      if (statusFilter) {
+        const initialCondition = {
+          id: crypto.randomUUID(),
+          field: 'status',
+          operator: 'is',
+          value: statusFilter
+        };
+        setConditions([initialCondition]);
+        setInitialFilterApplied(true);
+        
+        // Apply the filter immediately
+        const filteredData = allUploadsData.filter((item) => 
+          String(item.status).toLowerCase() === String(statusFilter).toLowerCase()
+        );
+        setUploadsData(filteredData);
+      } else {
+        setInitialFilterApplied(true);
+      }
+    }
+  }, [allUploadsData, initialFilterApplied, searchParams]);
 
   const addCondition = () => {
     const firstField = INGESTION_FILTER_FIELDS[0];
@@ -199,6 +262,9 @@ export default function Ingestions() {
     setConditions([]);
     setMatchMode("and");
     setUploadsData(allUploadsData);
+    setInitialFilterApplied(true); 
+    
+    navigate('/workspace/ingestions', { replace: true });
   };
 
   const runFilter = () => {
@@ -207,7 +273,6 @@ export default function Ingestions() {
       return;
     }
 
-    // is_empty and is_not_empty legitimately don't need a value.
     const validConditions = conditions.filter((condition) => {
       if (!condition.field || !condition.operator) {
         return false;

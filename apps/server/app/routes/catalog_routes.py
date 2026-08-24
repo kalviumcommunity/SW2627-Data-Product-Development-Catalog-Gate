@@ -1,13 +1,17 @@
 from uuid import UUID
-from fastapi import APIRouter, UploadFile, File, Depends
+from typing import Optional
+from fastapi import APIRouter, UploadFile, File, Depends, Query, HTTPException
 
 from app.schemas.current_user import CurrentUser
 from app.auth.dependency import get_current_user
 from app.services.catalog_service import (
     create_catalog_upload,
+    get_catalog_uploads,
     get_catalog_upload_by_id,
     get_report_by_id,
     get_profile_by_id,
+    get_pending_approvals,
+    approve_catalog_upload,
 )
 
 
@@ -19,31 +23,25 @@ router = APIRouter(
 
 @router.get("/uploads")
 def get_uploads(
+    vendor: Optional[bool] = Query(default=False, description="Include vendor (user) data joined on each upload"),
     current_user: CurrentUser = Depends(get_current_user),
 ):
-    return (
-        current_user.supabase
-        .table("catalog_uploads")
-        .select("""
-            *,
-            reports!reports_catalog_upload_id_fkey(
-                *,
-                dataset_profiles!dataset_profiles_report_id_fkey(*)
-            )
-        """)
-        .execute()
-        .data
+    return get_catalog_uploads(
+        current_user=current_user,
+        include_vendor=vendor,
     )
 
 
 @router.get("/uploads/{upload_id}")
 def get_upload_by_id(
     upload_id: UUID,
+    vendor: Optional[bool] = Query(default=False, description="Include vendor (user) data joined on this upload"),
     current_user: CurrentUser = Depends(get_current_user),
 ):
     return get_catalog_upload_by_id(
         current_user=current_user,
         upload_id=upload_id,
+        include_vendor=vendor,
     )
 
 
@@ -77,4 +75,41 @@ async def upload_file(
     return await create_catalog_upload(
         current_user=current_user,
         file=file,
+    )
+
+
+@router.get("/approvals/pending")
+def get_pending_approvals_list(
+    vendor: Optional[bool] = Query(default=False, description="Include vendor (user) data joined on each upload"),
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    """
+    Get all catalog uploads with APPROVAL_NEEDED status.
+    """
+    return get_pending_approvals(
+        current_user=current_user,
+        include_vendor=vendor,
+    )
+
+
+@router.patch("/uploads/{upload_id}/approve")
+def approve_upload(
+    upload_id: UUID,
+    current_user: CurrentUser = Depends(get_current_user),
+):
+    """
+    Approve a catalog upload by changing status from APPROVAL_NEEDED to COMPLETED.
+    Sets approved_by to current user's ID and approval_type to MANUAL.
+    Only accessible to catalog_admin role.
+    """
+    # Check if user has catalog_admin role
+    if current_user.role != "catalog_admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Only catalog_admin can approve uploads",
+        )
+    
+    return approve_catalog_upload(
+        current_user=current_user,
+        upload_id=upload_id,
     )
