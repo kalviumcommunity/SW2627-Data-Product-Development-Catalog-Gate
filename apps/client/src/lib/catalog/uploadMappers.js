@@ -22,6 +22,17 @@ export function mapCatalogUploadToRow(upload) {
   const totalRules = report?.total_rules ?? 0;
   const failedRules = report?.total_failed_rules ?? 0;
   const passedRules = totalRules > 0 ? totalRules - failedRules : 0;
+  
+  // Extract warning count from the warning jsonb field
+  const warningData = report?.warning;
+  let warningCount = 0;
+  if (warningData) {
+    if (Array.isArray(warningData)) {
+      warningCount = warningData.length;
+    } else if (typeof warningData === 'object') {
+      warningCount = Object.keys(warningData).length;
+    }
+  }
 
   // Flatten the joined vendor (users) data when present.
   const vendor = upload.users ?? null;
@@ -43,6 +54,7 @@ export function mapCatalogUploadToRow(upload) {
     total_rules: totalRules,
     failed_rules: failedRules,
     passed_rules: passedRules,
+    warning_count: warningCount,
     // Timestamps
     created_at: formatDateTime(upload.created_at),
     updated_at: formatDateTime(upload.updated_at),

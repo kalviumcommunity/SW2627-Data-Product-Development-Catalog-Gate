@@ -22,6 +22,7 @@ class ReportService:
 
         results = results or []
         failed = [r for r in results if not r.result.passed]
+        block_failures = [r for r in failed if r.rule.severity == Severity.BLOCK]
 
         return Report(
             generated_at=datetime.now(timezone.utc),
@@ -30,11 +31,8 @@ class ReportService:
             encoding=encoding,
             profile=profile,
             total_rules=len(results),
-            total_failed_rules=len(failed),
-            blocked=[
-                r for r in failed
-                if r.rule.severity == Severity.BLOCK
-            ],
+            total_failed_rules=len(block_failures),
+            blocked=block_failures,
             warning=[
                 r for r in failed
                 if r.rule.severity == Severity.WARNING

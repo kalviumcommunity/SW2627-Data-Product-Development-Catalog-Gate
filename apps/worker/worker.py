@@ -177,19 +177,21 @@ def process_upload(
         if result.rule.severity == Severity.BLOCK
     ]
 
-    # Check for non-BLOCK failures (warnings)
+    # Check for WARNING severity failures (warnings)
     warning_failures = [
         result
         for result in failed
-        if result.rule.severity != Severity.BLOCK
+        if result.rule.severity == Severity.WARNING
     ]
 
     if failed:
         logger.warning(
             "Validation completed. Found %d failed rules "
-            "out of %d total rules.",
+            "out of %d total rules (%d BLOCK, %d WARNING).",
             len(failed),
             len(results),
+            len(block_failures),
+            len(warning_failures),
         )
 
         for result in failed:
@@ -314,7 +316,7 @@ async def main():
             
             warning_failures = [
                 result for result in failed_results
-                if result.rule.severity != Severity.BLOCK
+                if result.rule.severity == Severity.WARNING
             ]
             
             # Set status based on validation results
@@ -327,7 +329,7 @@ async def main():
             elif warning_failures:
                 final_status = "APPROVAL_NEEDED"
                 logger.info(
-                    "Upload %s has non-BLOCK failures (warnings). Marking as APPROVAL_NEEDED.",
+                    "Upload %s has WARNING severity failures. Marking as APPROVAL_NEEDED.",
                     upload_job.id,
                 )
             else:
