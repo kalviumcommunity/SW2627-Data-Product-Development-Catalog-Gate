@@ -85,7 +85,7 @@ export default function VendorUpload() {
 
       setTimeout(() => {
         setShowSuccess(false);
-        navigate("/vendor");
+        navigate("/workspace");
       }, 2000);
     } catch (err) {
       const message =

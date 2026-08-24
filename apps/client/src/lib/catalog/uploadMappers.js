@@ -23,9 +23,17 @@ export function mapCatalogUploadToRow(upload) {
   const failedRules = report?.total_failed_rules ?? 0;
   const passedRules = totalRules > 0 ? totalRules - failedRules : 0;
 
+  // Flatten the joined vendor (users) data when present.
+  const vendor = upload.users ?? null;
+
   return {
     ...upload,
     filename: getFilename(upload.filepath),
+    // Vendor fields (populated when ?vendor=true was used)
+    vendor_id: vendor?.id ?? null,
+    vendor_name: vendor?.name ?? null,
+    vendor_phone: vendor?.phone ?? null,
+    vendor_role: vendor?.user_role ?? null,
     // Dataset profile fields
     row_count: profile?.row_count ?? null,
     column_count: profile?.column_count ?? null,
