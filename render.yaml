@@ -1,0 +1,38 @@
+services:
+  # FastAPI Backend Server
+  - type: web
+    name: catalog-gate-api
+    runtime: docker
+    dockerfilePath: ./apps/server/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHONPATH
+        value: /app
+    region: oregon
+
+  # Background Worker
+  - type: worker
+    name: catalog-gate-worker
+    runtime: docker
+    dockerfilePath: ./apps/worker/Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: ENVIRONMENT
+        value: production
+      - key: PYTHONPATH
+        value: /app
+    region: oregon
