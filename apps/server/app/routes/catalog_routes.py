@@ -83,9 +83,6 @@ def get_pending_approvals_list(
     vendor: Optional[bool] = Query(default=False, description="Include vendor (user) data joined on each upload"),
     current_user: CurrentUser = Depends(get_current_user),
 ):
-    """
-    Get all catalog uploads with APPROVAL_NEEDED status.
-    """
     return get_pending_approvals(
         current_user=current_user,
         include_vendor=vendor,
@@ -97,11 +94,6 @@ def approve_upload(
     upload_id: UUID,
     current_user: CurrentUser = Depends(get_current_user),
 ):
-    """
-    Approve a catalog upload by changing status from APPROVAL_NEEDED to COMPLETED.
-    Sets approved_by to current user's ID and approval_type to MANUAL.
-    Only accessible to catalog_admin role.
-    """
     # Check if user has catalog_admin role
     if current_user.role != "catalog_admin":
         raise HTTPException(
