@@ -105,7 +105,12 @@ export default function Dashboard() {
             : "—",
       }));
 
-      setUploadsData(enrichedData);
+      // Sort by created_at in descending order (most recent first)
+      const sortedData = enrichedData.sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+
+      setUploadsData(sortedData);
     } catch (error) {
       console.error("Failed to load uploads:", error);
 

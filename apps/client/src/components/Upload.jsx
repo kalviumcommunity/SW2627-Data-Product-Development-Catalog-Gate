@@ -41,7 +41,7 @@ export default function VendorUpload() {
   };
 
   const validateAndSetFile = (selectedFile) => {
-    const validExtensions = [".csv", ".xlsx", ".xls"];
+    const validExtensions = [".csv", ".json"];
 
     const fileExtension = selectedFile.name
       .substring(selectedFile.name.lastIndexOf("."))
@@ -49,8 +49,14 @@ export default function VendorUpload() {
 
     if (!validExtensions.includes(fileExtension)) {
       setError(
-        "Invalid file type. Please upload CSV, XLSX, or XLS files."
+        "Invalid file type. Please upload CSV or JSON files."
       );
+      setFile(null);
+      return;
+    }
+
+    if (selectedFile.size < 1024) {
+      setError("File size is too small. Please upload a file larger than 1KB.");
       setFile(null);
       return;
     }
@@ -174,7 +180,7 @@ export default function VendorUpload() {
               <h3>Select or Drop catalog spreadsheet</h3>
 
               <p className="formats-text">
-                Supports CSV, XLSX, or XLS files (up to 50MB)
+                Supports CSV or JSON files (1KB - 50MB)
               </p>
 
               <div className="manual-upload">
@@ -193,7 +199,7 @@ export default function VendorUpload() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".csv,.xlsx,.xls"
+                accept=".csv,.json"
                 onChange={handleFileSelect}
                 hidden
               />

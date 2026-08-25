@@ -1,0 +1,9 @@
+sku,title,category,brand,price,currency,stock_quantity
+BK001,Clean Code,Books,Pearson,"499.99",INR,42
+BK002,Design Patterns,Books,O'Reilly,"799.50",INR,18
+BK003,The Pragmatic Programmer,Books,Addison-Wesley,"650.00",INR,25
+BK004,Atomic Habits,Books,Avery,"550.75",INR,30    
+BK005,Introduction to Algorithms,Books,MIT Press,"1200.00",INR,12
+BK006,Refactoring,Books,Addison-Wesley,"899.99",INR,8
+BK007,Python Crash Course,Books!!!!,No Starch Press,"698889.00",INR,1885
+BK008,Deep Learning,"Books!!!   ",MIT Press,"799.50",INR,15
