@@ -72,6 +72,36 @@ async def upload_file(
     file: UploadFile = File(...),
     current_user: CurrentUser = Depends(get_current_user),
 ):
+    # Validate file type
+    valid_extensions = [".csv", ".json"]
+    file_extension = file.filename[file.filename.rfind("."):].lower()
+    
+    if file_extension not in valid_extensions:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file type. Please upload CSV or JSON files."
+        )
+    
+    # Read file content to check size
+    file_content = await file.read()
+    file_size = len(file_content)
+    
+    # Reset file pointer for subsequent reading
+    await file.seek(0)
+    
+    # Validate file size (1KB minimum, 50MB maximum)
+    if file_size < 1024:
+        raise HTTPException(
+            status_code=400,
+            detail="File size is too small. Please upload a file larger than 1KB."
+        )
+    
+    if file_size > 50 * 1024 * 1024:
+        raise HTTPException(
+            status_code=400,
+            detail="File size exceeds 50MB limit."
+        )
+    
     return await create_catalog_upload(
         current_user=current_user,
         file=file,

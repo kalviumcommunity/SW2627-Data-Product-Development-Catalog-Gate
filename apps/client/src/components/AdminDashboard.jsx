@@ -226,7 +226,11 @@ export default function AdminDashboard() {
             ? `${upload.duplicate_count} (${upload.duplicate_percentage.toFixed(1)}%)`
             : "—",
       }));
-      setUploadsData(enrichedData);
+      // Sort by created_at in descending order (most recent first)
+      const sortedData = enrichedData.sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      setUploadsData(sortedData);
     } catch (error) {
       const message = error instanceof ApiError ? error.message : "Failed to load catalog uploads.";
       setUploadsError(message);
@@ -241,7 +245,11 @@ export default function AdminDashboard() {
     try {
       const response = await getPendingApprovals({ vendor: true });
       const mappedData = mapCatalogUploads(response);
-      setPendingApprovalsData(mappedData);
+      // Sort by created_at in descending order (most recent first)
+      const sortedData = mappedData.sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      setPendingApprovalsData(sortedData);
     } catch (error) {
       console.error("Failed to load pending approvals:", error);
       setPendingApprovalsData([]);
